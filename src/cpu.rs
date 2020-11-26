@@ -56,7 +56,7 @@ pub trait Instruction {
 // See:  http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
 pub trait AddressingMode {
     fn read(&self, cpu: &CPU) -> u8;
-    fn write(&self, cpu: &CPU, value: u8);
+    fn write(&self, cpu: &mut CPU, value: u8);
 }
 
 

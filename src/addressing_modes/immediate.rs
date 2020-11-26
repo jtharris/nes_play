@@ -15,7 +15,7 @@ impl AddressingMode for Immediate {
         self.value
     }
 
-    fn write(&self, _: &CPU, _: u8) {
+    fn write(&self, _: &mut CPU, _: u8) {
         // do nothing sentence
     }
 }
