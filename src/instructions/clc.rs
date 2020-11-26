@@ -19,27 +19,27 @@ mod test {
     fn clears_set_c() {
         // Given
         let mut cpu = CPU::new();
-        cpu.processor_status = 0b00000001;
+        cpu.processor_status = 0b0000_0001;
 
         // When
         let clc = CLC{};
         clc.execute(&mut cpu);
 
         // Then
-        assert_eq!(0b00000000, cpu.processor_status);
+        assert_eq!(0b0000_0000, cpu.processor_status);
     }
 
     #[test]
     fn zeroed_c_is_unchanged() {
         // Given
         let mut cpu = CPU::new();
-        cpu.processor_status = 0b01001100;
+        cpu.processor_status = 0b0100_1100;
 
         // When
         let clc = CLC{};
         clc.execute(&mut cpu);
 
         // Then
-        assert_eq!(0b01001100, cpu.processor_status);
+        assert_eq!(0b0100_1100, cpu.processor_status);
     }
 }
