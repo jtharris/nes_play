@@ -6,3 +6,4 @@ mod absolute;
 mod absolute_x;
 mod absolute_y;
 mod indirect_x;
+mod indirect_y;
