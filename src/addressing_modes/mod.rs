@@ -5,3 +5,4 @@ mod zero_page_y;
 mod absolute;
 mod absolute_x;
 mod absolute_y;
+mod indirect_x;
