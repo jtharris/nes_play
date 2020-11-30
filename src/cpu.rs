@@ -22,25 +22,115 @@ impl CPU {
         }
     }
 
-    pub fn read_mem8(&self, addr: u16) -> u8 {
+    // http://wiki.nesdev.com/w/index.php/Status_flags
+    pub fn set_flag(&mut self, flag: StatusFlag, value: bool) {
+        let bit_mask: u8 = match flag {
+            StatusFlag::Carry => 1,
+            StatusFlag::Zero => 2,
+            StatusFlag::InterruptDisable => 4,
+            StatusFlag::Decimal => 8,
+            StatusFlag::Overflow => 32,
+            StatusFlag::Negative => 64
+        };
+
+        self.processor_status = match value {
+            true => self.processor_status | bit_mask,
+            false => self.processor_status & !bit_mask,
+        };
+    }
+
+    fn read_mem8(&self, addr: u16) -> u8 {
         self.memory[addr as usize]
     }
 
-    pub fn write_mem8(&mut self, addr: u16, val: u8) {
+    fn write_mem8(&mut self, addr: u16, val: u8) {
         self.memory[addr as usize] = val;
     }
 
-    pub fn read_mem16(&self, addr: u16) -> u16 {
+    fn read_mem16(&self, addr: u16) -> u16 {
         let bytes = [self.read_mem8(addr), self.read_mem8(addr+1)];
         u16::from_le_bytes(bytes)
     }
 
-    pub fn write_mem16(&mut self, addr: u16, val: u16) {
+    fn write_mem16(&mut self, addr: u16, val: u16) {
         let bytes: [u8; 2] = val.to_le_bytes();
         self.write_mem8(addr, bytes[0]);
         self.write_mem8(addr+1, bytes[1]);
     }
+
+    // See for reference:
+    //  * www.obelisk.me.uk/6502/addressing.html
+    //  * http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
+    //  * https://skilldrick.github.io/easy6502/#addressing
+    fn mem_address(&self, mode: &AddressingMode) -> u16 {
+        match mode {
+            &AddressingMode::Absolute(address) => address,
+            &AddressingMode::AbsoluteX(base) => {
+                base.wrapping_add(self.index_register_x as u16)
+            }
+            &AddressingMode::AbsoluteY(base) => {
+                base.wrapping_add(self.index_register_y as u16)
+            }
+            &AddressingMode::IndirectX(base) => {
+                self.read_mem16(base.wrapping_add(self.index_register_x) as u16)
+            }
+            &AddressingMode::IndirectY(address) => {
+                self.read_mem16(address as u16).wrapping_add(self.index_register_y as u16)
+            }
+            &AddressingMode::ZeroPage(address) => address as u16,
+            &AddressingMode::ZeroPageX(base) => {
+                base.wrapping_add(self.index_register_x) as u16
+            }
+            &AddressingMode::ZeroPageY(base) => {
+                base.wrapping_add(self.index_register_y) as u16
+            }
+            &AddressingMode::Immediate(_) => panic!("Immediate Addressing Mode has no memory address")
+        }
+    }
+
+    pub fn read(&self, mode: &AddressingMode) -> u8 {
+        match mode {
+            &AddressingMode::Immediate(value) => value,
+            am => self.read_mem8(self.mem_address(am))
+        }
+    }
+
+    pub fn write(&mut self, mode: &AddressingMode, value: u8) {
+        match mode {
+            &AddressingMode::Immediate(_) => {},
+            am => self.write_mem8(self.mem_address(am), value)
+        }
+    }
 }
+
+
+// http://wiki.nesdev.com/w/index.php/Status_flags
+pub enum StatusFlag {
+    Carry,
+    Zero,
+    InterruptDisable,
+    Decimal,
+    Overflow,
+    Negative,
+}
+
+
+// AddressingMode is a strategy for retrieving a value from memory
+// See:  http://www.obelisk.me.uk/6502/addressing.html
+// See:  https://skilldrick.github.io/easy6502/#addressing
+// See:  http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
+pub enum AddressingMode {
+    Absolute(u16),
+    AbsoluteX(u16),
+    AbsoluteY(u16),
+    Immediate(u8),
+    IndirectX(u8),
+    IndirectY(u8),
+    ZeroPage(u8),
+    ZeroPageX(u8),
+    ZeroPageY(u8),
+}
+
 
 // Instructions are implemented as a visitor pattern, each being executable on
 // a given CPU reference
@@ -50,19 +140,10 @@ pub trait Instruction {
 }
 
 
-// AddressingMode is a strategy for retrieving a value from memory
-// See:  http://www.obelisk.me.uk/6502/addressing.html
-// See:  https://skilldrick.github.io/easy6502/#addressing
-// See:  http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
-pub trait AddressingMode {
-    fn read(&self, cpu: &CPU) -> u8;
-    fn write(&self, cpu: &mut CPU, value: u8);
-}
-
-
 #[cfg(test)]
 mod test {
     use super::CPU;
+    use crate::cpu::AddressingMode::*;
 
     #[test]
     fn read_write_8bit_memory() {
@@ -94,4 +175,361 @@ mod test {
         // Then
         assert_eq!(0x2810, cpu.read_mem16(0x08A0));
     }
+
+    #[test]
+    fn absolute_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0xF9EA, 0x8A);
+
+        // Then
+        assert_eq!(0x8A, cpu.read(&Absolute(0xF9EA)));
+    }
+
+    #[test]
+    fn absolute_write() {
+        // Given
+        let mut cpu = CPU::new();
+
+        // When
+        cpu.write(&Absolute(0xF9EA), 0x07);
+
+        // Then
+        assert_eq!(0x07, cpu.read_mem16(0xF9EA));
+    }
+
+    #[test]
+    fn absolute_x_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x8D, 0x09);
+        cpu.index_register_x = 0x0A;
+
+        // Then
+        assert_eq!(0x09, cpu.read(&AbsoluteX(0x83)));
+    }
+
+    #[test]
+    fn absolute_x_no_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x0104, 0x29);
+        cpu.index_register_x = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&AbsoluteX(0x00FF)));
+    }
+
+    #[test]
+    fn absolute_x_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x0003, 0x29);
+        cpu.index_register_x = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&AbsoluteX(0xFFFE)));
+    }
+
+    #[test]
+    fn absolute_x_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x0A;
+
+        // WHen
+        cpu.write(&AbsoluteX(0x83), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x8D));
+    }
+
+    #[test]
+    fn absolute_x_no_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x07;
+
+        // When
+        cpu.write(&AbsoluteX(0x00FF), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x0106));
+    }
+
+    #[test]
+    fn absolute_x_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x07;
+
+        // When
+        cpu.write(&AbsoluteX(0xFFFD), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x0004));
+    }
+
+    #[test]
+    fn absolute_y_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x8D, 0x09);
+        cpu.index_register_y = 0x0A;
+
+        // Then
+        assert_eq!(0x09, cpu.read(&AbsoluteY(0x83)));
+    }
+
+    #[test]
+    fn absolute_y_no_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x0104, 0x29);
+        cpu.index_register_y = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&AbsoluteY(0x00FF)));
+    }
+
+    #[test]
+    fn absolute_y_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x0003, 0x29);
+        cpu.index_register_y = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&AbsoluteY(0xFFFE)));
+    }
+
+    #[test]
+    fn absolute_y_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_y = 0x0A;
+
+        // When
+        cpu.write(&AbsoluteY(0x83), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x8D));
+    }
+
+    #[test]
+    fn absolute_y_no_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_y = 0x07;
+
+        // When
+        cpu.write(&AbsoluteY(0x00FF), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x0106));
+    }
+
+    #[test]
+    fn absolute_y_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_y = 0x07;
+
+        // When
+        cpu.write(&AbsoluteY(0xFFFD), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x0004));
+    }
+
+    #[test]
+    fn immediate_read() {
+        // Given
+        let cpu = CPU::new();
+
+        // Then
+        assert_eq!(0xEA, cpu.read(&Immediate(0xEA)));
+    }
+
+    #[test]
+    fn indirect_x_read() {
+        // Example from Indexed indirect here:  https://skilldrick.github.io/easy6502/#addressing
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x01;
+        cpu.write_mem8(0x01, 0x05);
+        cpu.write_mem8(0x02, 0x07);
+        cpu.write_mem8(0x0705, 0x0A);
+
+        // Then
+        assert_eq!(0x0A, cpu.read(&IndirectX(0x00)));
+    }
+
+    #[test]
+    fn indirect_x_write() {
+        // Example derived from:  https://skilldrick.github.io/easy6502/#addressing
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x01;
+        cpu.write_mem8(0x01, 0x05);
+        cpu.write_mem8(0x02, 0x07);
+
+        // When
+        cpu.write(&IndirectX(0x00), 0x0A);
+
+        // Then
+        assert_eq!(0x0A, cpu.read_mem8(0x0705));
+    }
+
+
+    #[test]
+    fn indirect_y_read() {
+        // Example from Indexed indirect here:  https://skilldrick.github.io/easy6502/#addressing
+        // Given
+        let mut cpu = CPU::new();
+
+        cpu.index_register_y = 0x01;
+        cpu.write_mem8(0x01, 0x03);
+        cpu.write_mem8(0x02, 0x07);
+        cpu.write_mem8(0x0704, 0x0A);
+
+        // Then
+        assert_eq!(0x0A, cpu.read(&IndirectY(0x01)));
+    }
+
+    #[test]
+    fn indirect_y_write() {
+        // Adapted from the indirect_y_read
+        // Given
+        let mut cpu = CPU::new();
+
+        cpu.index_register_y = 0x01;
+        cpu.write_mem8(0x01, 0x03);
+        cpu.write_mem8(0x02, 0x07);
+
+        // When
+        cpu.write(&IndirectY(0x01), 0x0A);
+
+        // Then
+        assert_eq!(0x0A, cpu.read_mem8(0x0704));
+    }
+
+    #[test]
+    fn zero_page_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0xA8, 0x0C);
+
+        // Then
+        assert_eq!(0x0C, cpu.read(&ZeroPage(0xA8)));
+    }
+
+    #[test]
+    fn zero_page_write() {
+        // Given
+        let mut cpu = CPU::new();
+
+        // When
+        cpu.write(&ZeroPage(0xA8), 0xF1);
+
+        // Then
+        assert_eq!(0xF1, cpu.read_mem8(0xA8));
+    }
+
+    #[test]
+    fn zero_page_x_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x8D, 0x09);
+        cpu.index_register_x = 0x0A;
+
+        // Then
+        assert_eq!(0x09, cpu.read(&ZeroPageX(0x83)));
+    }
+
+    #[test]
+    fn zero_page_x_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x04, 0x29);
+        cpu.index_register_x = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&ZeroPageX(0xFF)));
+    }
+
+    #[test]
+    fn zero_page_x_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x0A;
+
+        // When
+        cpu.write(&ZeroPageX(0x83), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x8D));
+    }
+
+    #[test]
+    fn zero_page_x_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_x = 0x07;
+
+        // When
+        cpu.write(&ZeroPageX(0xFF), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x06));
+    }
+
+    #[test]
+    fn zero_page_y_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x8D, 0x09);
+        cpu.index_register_y = 0x0A;
+
+        // Then
+        assert_eq!(0x09, cpu.read(&ZeroPageY(0x83)));
+    }
+
+    #[test]
+    fn zero_page_y_wrap_around_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.write_mem8(0x04, 0x29);
+        cpu.index_register_y = 0x05;
+
+        // Then
+        assert_eq!(0x29, cpu.read(&ZeroPageY(0xFF)));
+    }
+
+    #[test]
+    fn zero_page_y_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_y = 0x0A;
+
+        // When
+        cpu.write(&ZeroPageY(0x83), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x8D));
+    }
+
+    #[test]
+    fn zero_page_y_wrap_around_write() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.index_register_y = 0x07;
+
+        // When
+        cpu.write(&ZeroPageY(0xFF), 0x09);
+
+        // Then
+        assert_eq!(0x09, cpu.read_mem8(0x06));
+    }
+
 }

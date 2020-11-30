@@ -1,11 +1,11 @@
-use crate::cpu::{CPU, Instruction};
+use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#CLC
 pub struct CLC {}
 
 impl Instruction for CLC {
     fn execute(&self, cpu: &mut CPU) {
-        cpu.processor_status &= 0xFE;
+        cpu.set_flag(StatusFlag::Carry, false);
     }
 }
 
