@@ -70,7 +70,7 @@ mod test {
         // Then
         // -115 + 17 = -98 so V is set, 243 + 17 = 260 so C is set
         assert_eq!(0x04, cpu.accumulator);
-        assert_eq!(0b00100001, cpu.processor_status);
+        assert_eq!(0b01000001, cpu.processor_status);
     }
 
     #[test]
@@ -106,7 +106,7 @@ mod test {
 
         // Then
         assert_eq!(0x88, cpu.accumulator);
-        assert_eq!(0b01000001, cpu.processor_status);
+        assert_eq!(0b10000001, cpu.processor_status);
     }
 
     #[test]
@@ -123,7 +123,7 @@ mod test {
 
         // Then
         assert_eq!(0x00, cpu.accumulator);
-        assert_eq!(0b00100011, cpu.processor_status);
+        assert_eq!(0b01000011, cpu.processor_status);
     }
 
 }

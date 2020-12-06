@@ -25,12 +25,12 @@ impl CPU {
     // http://wiki.nesdev.com/w/index.php/Status_flags
     pub fn set_flag(&mut self, flag: StatusFlag, value: bool) {
         let bit_mask: u8 = match flag {
-            StatusFlag::Carry => 1,
-            StatusFlag::Zero => 2,
-            StatusFlag::InterruptDisable => 4,
-            StatusFlag::Decimal => 8,
-            StatusFlag::Overflow => 32,
-            StatusFlag::Negative => 64
+            StatusFlag::Carry =>            0b00000001,
+            StatusFlag::Zero =>             0b00000010,
+            StatusFlag::InterruptDisable => 0b00000100,
+            StatusFlag::Decimal =>          0b00001000,
+            StatusFlag::Overflow =>         0b01000000,
+            StatusFlag::Negative =>         0b10000000
         };
 
         self.processor_status = match value {
