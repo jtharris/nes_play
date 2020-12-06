@@ -84,12 +84,14 @@ impl CPU {
             &AddressingMode::ZeroPageY(base) => {
                 base.wrapping_add(self.index_register_y) as u16
             }
-            &AddressingMode::Immediate(_) => panic!("Immediate Addressing Mode has no memory address")
+            &AddressingMode::Immediate(_) => panic!("Immediate Addressing Mode has no memory address"),
+            &AddressingMode::Accumulator => panic!("Accumulator Mode has no memory address"),
         }
     }
 
     pub fn read(&self, mode: &AddressingMode) -> u8 {
         match mode {
+            &AddressingMode::Accumulator => self.accumulator,
             &AddressingMode::Immediate(value) => value,
             am => self.read_mem8(self.mem_address(am))
         }
@@ -97,6 +99,7 @@ impl CPU {
 
     pub fn write(&mut self, mode: &AddressingMode, value: u8) {
         match mode {
+            &AddressingMode::Accumulator => self.accumulator = value,
             &AddressingMode::Immediate(_) => {},
             am => self.write_mem8(self.mem_address(am), value)
         }
@@ -120,6 +123,7 @@ pub enum StatusFlag {
 // See:  https://skilldrick.github.io/easy6502/#addressing
 // See:  http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
 pub enum AddressingMode {
+    Accumulator,
     Absolute(u16),
     AbsoluteX(u16),
     AbsoluteY(u16),
@@ -174,6 +178,28 @@ mod test {
 
         // Then
         assert_eq!(0x2810, cpu.read_mem16(0x08A0));
+    }
+
+    #[test]
+    fn accumulator_read() {
+        // Given
+        let mut cpu = CPU::new();
+        cpu.accumulator = 0x8C;
+
+        // Then
+        assert_eq!(0x8C, cpu.read(&Accumulator));
+    }
+
+    #[test]
+    fn accumulator_write() {
+        // Given
+        let mut cpu = CPU::new();
+
+        // When
+        cpu.write(&Accumulator, 0x07);
+
+        // Then
+        assert_eq!(0x07, cpu.accumulator);
     }
 
     #[test]
