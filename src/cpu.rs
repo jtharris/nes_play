@@ -22,21 +22,18 @@ impl CPU {
         }
     }
 
+
     // http://wiki.nesdev.com/w/index.php/Status_flags
     pub fn set_flag(&mut self, flag: StatusFlag, value: bool) {
-        let bit_mask: u8 = match flag {
-            StatusFlag::Carry =>            0b00000001,
-            StatusFlag::Zero =>             0b00000010,
-            StatusFlag::InterruptDisable => 0b00000100,
-            StatusFlag::Decimal =>          0b00001000,
-            StatusFlag::Overflow =>         0b01000000,
-            StatusFlag::Negative =>         0b10000000
-        };
-
         self.processor_status = match value {
-            true => self.processor_status | bit_mask,
-            false => self.processor_status & !bit_mask,
+            true => self.processor_status | flag.bitmask(),
+            false => self.processor_status & !flag.bitmask(),
         };
+    }
+
+    pub fn get_flag(&self, flag: StatusFlag) -> bool {
+        let bitmask = flag.bitmask();
+        self.processor_status & bitmask == bitmask
     }
 
     fn read_mem8(&self, addr: u16) -> u8 {
@@ -115,6 +112,19 @@ pub enum StatusFlag {
     Decimal,
     Overflow,
     Negative,
+}
+
+impl StatusFlag {
+    fn bitmask(&self) -> u8 {
+        match self {
+            StatusFlag::Carry =>            0b00000001,
+            StatusFlag::Zero =>             0b00000010,
+            StatusFlag::InterruptDisable => 0b00000100,
+            StatusFlag::Decimal =>          0b00001000,
+            StatusFlag::Overflow =>         0b01000000,
+            StatusFlag::Negative =>         0b10000000
+        }
+    }
 }
 
 
