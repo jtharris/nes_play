@@ -23,9 +23,8 @@ impl Instruction for BIT {
 
 #[cfg(test)]
 mod test {
-    use crate::cpu::{CPU, Instruction};
+    use crate::cpu::{CPU, Instruction, AddressingMode::ZeroPage};
     use super::BIT;
-    use crate::cpu::AddressingMode::ZeroPage;
 
     #[test]
     fn clear_top_bits() {

@@ -1,19 +1,19 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
-// http://www.obelisk.me.uk/6502/reference.html#BMI
-struct BMI {
+// http://www.obelisk.me.uk/6502/reference.html#BPL
+struct BPL {
     relative: i8
 }
 
-impl BMI {
+impl BPL {
     pub fn new(relative: i8) -> Self {
-        BMI{ relative }
+        BPL{ relative }
     }
 }
 
-impl Instruction for BMI {
+impl Instruction for BPL {
     fn execute(&self, cpu: &mut CPU) {
-        if cpu.get_flag(StatusFlag::Negative) {
+        if !cpu.get_flag(StatusFlag::Negative) {
             cpu.program_counter = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
         }
     }
@@ -22,21 +22,21 @@ impl Instruction for BMI {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use super::BMI;
+    use super::BPL;
 
     #[test]
     fn no_effect() {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0x0844;
-        cpu.processor_status = 0x00;    // Negative flag is clear
+        cpu.processor_status = 0x80;    // Negative flag is set
 
         // When
-        BMI::new(0xA).execute(&mut cpu);
+        BPL::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x0844);   // Nothing changed
-        assert_eq!(cpu.processor_status, 0x00);
+        assert_eq!(cpu.processor_status, 0x80);
     }
 
     #[test]
@@ -44,14 +44,14 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0x0844;
-        cpu.processor_status = 0x81;
+        cpu.processor_status = 0x03;
 
         // When
-        BMI::new(0xA).execute(&mut cpu);
+        BPL::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x084E);
-        assert_eq!(cpu.processor_status, 0x81);
+        assert_eq!(cpu.processor_status, 0x03);
     }
 
     #[test]
@@ -59,13 +59,13 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0xF844;
-        cpu.processor_status = 0x80;
+        cpu.processor_status = 0x00;
 
         // When
-        BMI::new(-0xF).execute(&mut cpu);
+        BPL::new(-0xF).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
-        assert_eq!(cpu.processor_status, 0x80);
+        assert_eq!(cpu.processor_status, 0x00);
     }
 }
