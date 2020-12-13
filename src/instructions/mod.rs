@@ -11,3 +11,6 @@ mod bne;
 mod bpl;
 mod bvc;
 mod bvs;
+mod cld;
+mod cli;
+mod clv;

@@ -22,8 +22,7 @@ mod test {
         cpu.processor_status = 0b0000_0001;
 
         // When
-        let clc = CLC{};
-        clc.execute(&mut cpu);
+        CLC{}.execute(&mut cpu);
 
         // Then
         assert_eq!(0b0000_0000, cpu.processor_status);
@@ -36,8 +35,7 @@ mod test {
         cpu.processor_status = 0b0100_1100;
 
         // When
-        let clc = CLC{};
-        clc.execute(&mut cpu);
+        CLC{}.execute(&mut cpu);
 
         // Then
         assert_eq!(0b0100_1100, cpu.processor_status);
