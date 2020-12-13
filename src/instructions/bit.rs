@@ -43,6 +43,7 @@ mod test {
         assert_eq!(0x02, cpu.processor_status);  // Only zero flag should be set
     }
 
+    #[test]
     fn set_top_bits() {
         // Given
         let mut cpu = CPU::new();
