@@ -1,19 +1,19 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
-// http://www.obelisk.me.uk/6502/reference.html#BCS
-struct BCS {
+// http://www.obelisk.me.uk/6502/reference.html#BEQ
+struct BEQ {
     relative: i8
 }
 
-impl BCS {
+impl BEQ {
     pub fn new(relative: i8) -> Self {
-        BCS{ relative }
+        BEQ{ relative }
     }
 }
 
-impl Instruction for BCS {
+impl Instruction for BEQ {
     fn execute(&self, cpu: &mut CPU) {
-        if cpu.get_flag(StatusFlag::Carry) {
+        if cpu.get_flag(StatusFlag::Zero) {
             cpu.program_counter = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
         }
     }
@@ -22,21 +22,21 @@ impl Instruction for BCS {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use super::BCS;
+    use super::BEQ;
 
     #[test]
     fn no_effect() {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0x0844;
-        cpu.processor_status = 0x02;    // Carry is clear
+        cpu.processor_status = 0x01;    // Zero is clear
 
         // When
-        BCS::new(0xA).execute(&mut cpu);
+        BEQ::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x0844);   // Nothing changed
-        assert_eq!(cpu.processor_status, 0x02);
+        assert_eq!(cpu.processor_status, 0x01);
     }
 
     #[test]
@@ -44,14 +44,14 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0x0844;
-        cpu.processor_status = 0x01;
+        cpu.processor_status = 0x02;
 
         // When
-        BCS::new(0xA).execute(&mut cpu);
+        BEQ::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x084E);
-        assert_eq!(cpu.processor_status, 0x01);
+        assert_eq!(cpu.processor_status, 0x02);
     }
 
     #[test]
@@ -59,13 +59,13 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.program_counter = 0xF844;
-        cpu.processor_status = 0x01;
+        cpu.processor_status = 0x02;
 
         // When
-        BCS::new(-0xF).execute(&mut cpu);
+        BEQ::new(-0xF).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
-        assert_eq!(cpu.processor_status, 0x01);
+        assert_eq!(cpu.processor_status, 0x02);
     }
 }

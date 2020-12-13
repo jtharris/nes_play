@@ -32,8 +32,7 @@ mod test {
         cpu.processor_status = 0x03;
 
         // When
-        let bcc = BCC::new(0xA);
-        bcc.execute(&mut cpu);
+        BCC::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x0844);   // Nothing changed
@@ -48,8 +47,7 @@ mod test {
         cpu.processor_status = 0x00;
 
         // When
-        let bcc = BCC::new(0xA);
-        bcc.execute(&mut cpu);
+        BCC::new(0xA).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0x084E);
@@ -64,8 +62,7 @@ mod test {
         cpu.processor_status = 0x00;
 
         // When
-        let bcc = BCC::new(-0xF);
-        bcc.execute(&mut cpu);
+        BCC::new(-0xF).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
