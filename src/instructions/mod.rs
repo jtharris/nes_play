@@ -9,3 +9,5 @@ mod bit;
 mod bmi;
 mod bne;
 mod bpl;
+mod bvc;
+mod bvs;
