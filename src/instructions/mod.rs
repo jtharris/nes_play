@@ -14,3 +14,4 @@ mod bvs;
 mod cld;
 mod cli;
 mod clv;
+mod cmp;
