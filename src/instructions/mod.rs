@@ -17,3 +17,6 @@ mod clv;
 mod cmp;
 mod cpx;
 mod cpy;
+mod dec;
+mod dex;
+mod dey;
