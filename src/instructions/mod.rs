@@ -20,3 +20,4 @@ mod cpy;
 mod dec;
 mod dex;
 mod dey;
+mod eor;

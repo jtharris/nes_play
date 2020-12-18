@@ -1,20 +1,20 @@
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
-// http://www.obelisk.me.uk/6502/reference.html#AND
-struct AND {
+// http://www.obelisk.me.uk/6502/reference.html#EOR
+struct EOR {
     mode: AddressingMode
 }
 
-impl AND {
+impl EOR {
     pub fn new(mode: AddressingMode) -> Self {
-        AND{ mode }
+        EOR{ mode }
     }
 }
 
-impl Instruction for AND {
+impl Instruction for EOR {
     fn execute(&self, cpu: &mut CPU) {
         let memory_value= cpu.read(&self.mode);
-        cpu.accumulator &= memory_value;
+        cpu.accumulator ^= memory_value;
 
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
@@ -25,35 +25,35 @@ impl Instruction for AND {
 mod test {
     use crate::cpu::{CPU, Instruction};
     use crate::cpu::AddressingMode::{ZeroPage, Immediate};
-    use crate::instructions::and::AND;
+    use crate::instructions::eor::EOR;
 
     #[test]
-    fn basic_and() {
+    fn basic_eor() {
         // Given
         let mut cpu = CPU::new();
         let mode = ZeroPage(0xD3);
 
-        cpu.accumulator = 0b01101110;
+        cpu.accumulator =      0b01101110;
         cpu.write(&mode, 0b00110111);
 
         // When
-        AND::new(mode).execute(&mut cpu);
+        EOR::new(mode).execute(&mut cpu);
 
         // Then
-        assert_eq!(cpu.accumulator, 0b00100110);
+        assert_eq!(cpu.accumulator, 0b01011001);
         assert_eq!(cpu.processor_status, 0);
     }
 
     #[test]
-    fn zero_flag_and() {
+    fn zero_flag_eor() {
         // Given
         let mut cpu = CPU::new();
-        let mode = Immediate(0);
+        let mode = Immediate(0b01101110);
 
         cpu.accumulator = 0b01101110;
 
         // When
-        AND::new(mode).execute(&mut cpu);
+        EOR::new(mode).execute(&mut cpu);
 
         // Then
         assert_eq!(cpu.accumulator, 0);
@@ -61,18 +61,18 @@ mod test {
     }
 
     #[test]
-    fn negative_flag_and() {
+    fn negative_flag_eor() {
         // Given
         let mut cpu = CPU::new();
-        let mode = Immediate(0xF0);
+        let mode = Immediate(0b01011111);
 
         cpu.accumulator = 0b11011110;
 
         // When
-        AND::new(mode).execute(&mut cpu);
+        EOR::new(mode).execute(&mut cpu);
 
         // Then
-        assert_eq!(cpu.accumulator, 0b11010000);
+        assert_eq!(cpu.accumulator, 0b10000001);
         assert_eq!(cpu.processor_status, 0b10000000);  // Negative flag is set
     }
 }
