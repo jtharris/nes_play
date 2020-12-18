@@ -1,11 +1,11 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
-// http://www.obelisk.me.uk/6502/reference.html#DEY
-pub struct DEY {}
+// http://www.obelisk.me.uk/6502/reference.html#INY
+pub struct INY {}
 
-impl Instruction for DEY {
+impl Instruction for INY {
     fn execute(&self, cpu: &mut CPU) {
-        let (val, _) = cpu.index_register_y.overflowing_sub(1);
+        let (val, _) = cpu.index_register_y.overflowing_add(1);
         cpu.index_register_y = val;
 
         cpu.set_flag(StatusFlag::Zero,  val == 0);
@@ -16,7 +16,7 @@ impl Instruction for DEY {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::instructions::dey::DEY;
+    use crate::instructions::iny::INY;
 
     #[test]
     fn basic_decrement() {
@@ -25,25 +25,11 @@ mod test {
         cpu.index_register_y = 0x0C;
 
         // When
-        DEY{}.execute(&mut cpu);
+        INY{}.execute(&mut cpu);
 
         // Then
-        assert_eq!(0x0B, cpu.index_register_y);
+        assert_eq!(0x0D, cpu.index_register_y);
         assert_eq!(0, cpu.processor_status);    // Make sure no bits were set
-    }
-
-    #[test]
-    fn zero_result() {
-        // Given
-        let mut cpu = CPU::new();
-        cpu.index_register_y = 0x01;
-
-        // When
-        DEY{}.execute(&mut cpu);
-
-        // Then
-        assert_eq!(0, cpu.index_register_y);
-        assert_eq!(0x02, cpu.processor_status);    // Zero flag is set
     }
 
     #[test]
@@ -53,24 +39,24 @@ mod test {
         cpu.index_register_y = 0xFD;
 
         // When
-        DEY{}.execute(&mut cpu);
+        INY{}.execute(&mut cpu);
 
         // Then
-        assert_eq!(0xFC, cpu.index_register_y);
+        assert_eq!(0xFE, cpu.index_register_y);
         assert_eq!(0x80, cpu.processor_status);    // Negative flag is set
     }
 
     #[test]
-    fn negative_wrap() {
+    fn zero_wrap() {
         // Given
         let mut cpu = CPU::new();
-        cpu.index_register_y = 0x00;
+        cpu.index_register_y = 0xFF;
 
         // When
-        DEY{}.execute(&mut cpu);
+        INY{}.execute(&mut cpu);
 
         // Then
-        assert_eq!(0xFF, cpu.index_register_y);
-        assert_eq!(0x80, cpu.processor_status);    // Negative flag is set
+        assert_eq!(0x00, cpu.index_register_y);
+        assert_eq!(0x02, cpu.processor_status);    // Zero flag is set
     }
 }

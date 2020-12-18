@@ -57,6 +57,6 @@ mod test {
 
         // Then
         assert_eq!(0x00, cpu.index_register_x);
-        assert_eq!(0x02, cpu.processor_status);    // Negative flag is set
+        assert_eq!(0x02, cpu.processor_status);    // Zero flag is set
     }
 }

@@ -23,3 +23,4 @@ mod dey;
 mod eor;
 mod inc;
 mod inx;
+mod iny;
