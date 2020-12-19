@@ -44,12 +44,12 @@ impl CPU {
         self.memory[addr as usize] = val;
     }
 
-    fn read_mem16(&self, addr: u16) -> u16 {
+    pub fn read_mem16(&self, addr: u16) -> u16 {
         let bytes = [self.read_mem8(addr), self.read_mem8(addr+1)];
         u16::from_le_bytes(bytes)
     }
 
-    fn write_mem16(&mut self, addr: u16, val: u16) {
+    pub fn write_mem16(&mut self, addr: u16, val: u16) {
         let bytes: [u8; 2] = val.to_le_bytes();
         self.write_mem8(addr, bytes[0]);
         self.write_mem8(addr+1, bytes[1]);
