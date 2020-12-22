@@ -11,9 +11,10 @@ pub struct CPU {
 
 impl CPU {
     pub fn new() -> Self {
+        //http://wiki.nesdev.com/w/index.php/CPU_power_up_state
         CPU {
             program_counter: 0,
-            stack_pointer: 0,
+            stack_pointer: 0xFD,
             accumulator: 0,
             index_register_x: 0,
             index_register_y: 0,
@@ -100,6 +101,17 @@ impl CPU {
             &AddressingMode::Immediate(_) => {},
             am => self.write_mem8(self.mem_address(am), value)
         }
+    }
+
+    // See Stack Operations http://obelisk.me.uk/6502/instructions.html
+    pub fn push_stack(&mut self, value: u8) {
+        self.write_mem8(self.stack_pointer as u16 | 0x0100, value);
+        self.stack_pointer -= 1;
+    }
+
+    pub fn pop_stack(&mut self) -> u8 {
+        self.stack_pointer += 1;
+        self.read_mem8(self.stack_pointer as u16 | 0x0100)
     }
 }
 
@@ -566,6 +578,40 @@ mod test {
 
         // Then
         assert_eq!(0x09, cpu.read_mem8(0x06));
+    }
+
+    #[test]
+    fn push_values_to_stack() {
+        // Given
+        let mut cpu = CPU::new();
+
+        // When
+        cpu.push_stack(0x83);
+        cpu.push_stack(0x04);
+        cpu.push_stack(0xF3);
+
+        // Then
+        assert_eq!(0xFA, cpu.stack_pointer);
+        assert_eq!(0x83, cpu.read_mem8(0x01FD));
+        assert_eq!(0x04, cpu.read_mem8(0x01FC));
+        assert_eq!(0xF3, cpu.read_mem8(0x01FB));
+    }
+
+    #[test]
+    fn push_and_pop_stack() {
+        // Given
+        let mut cpu = CPU::new();
+
+        // When
+        cpu.push_stack(0x83);
+        cpu.push_stack(0x04);
+
+        // Then
+        assert_eq!(0x04, cpu.pop_stack());
+        assert_eq!(0xFC, cpu.stack_pointer);
+
+        assert_eq!(0x83, cpu.pop_stack());
+        assert_eq!(0xFD, cpu.stack_pointer);
     }
 
 }
