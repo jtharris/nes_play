@@ -14,7 +14,8 @@ impl JSR {
 impl Instruction for JSR {
     fn execute(&self, cpu: &mut CPU) {
         // I *think* using big endian is due to the stack decrementing instead of incrementing...?
-        let bytes: [u8; 2] = cpu.program_counter.to_be_bytes();
+        let return_address = cpu.program_counter - 1;
+        let bytes: [u8; 2] = return_address.to_be_bytes();
         cpu.push_stack(bytes[0]);
         cpu.push_stack(bytes[1]);
         cpu.program_counter = self.target;
@@ -38,6 +39,6 @@ mod test {
         // Then
         assert_eq!(0x02F0, cpu.program_counter);
         assert_eq!(0xD8, cpu.read(&Absolute(0x01FD)));
-        assert_eq!(0xDC, cpu.read(&Absolute(0x01FC)));
+        assert_eq!(0xDB, cpu.read(&Absolute(0x01FC)));  // Once loaded, PC will inc
     }
 }

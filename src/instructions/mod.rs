@@ -26,3 +26,4 @@ mod inx;
 mod iny;
 mod jmp;
 mod jsr;
+mod lda;
