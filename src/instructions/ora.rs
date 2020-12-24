@@ -19,6 +19,8 @@ impl Instruction for ORA {
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
     }
 }
+
+
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
