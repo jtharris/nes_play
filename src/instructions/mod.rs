@@ -36,3 +36,5 @@ mod pha;
 mod php;
 mod pla;
 mod plp;
+mod rol;
+mod ror;
