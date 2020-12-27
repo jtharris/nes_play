@@ -20,7 +20,7 @@ impl Instruction for ADC {
         // http://nesdev.com/6502_cpu.txt
         // http://www.6502.org/tutorials/vflag.html
         let carry = sum > 0xFF;
-        let overflow = sum >= 0x7F && sum <= 0x17F;
+        let overflow = sum >= 0x007F && sum <= 0x017F;
 
         cpu.accumulator = sum as u8;
         cpu.set_flag(StatusFlag::Carry, carry);

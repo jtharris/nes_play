@@ -40,3 +40,4 @@ mod rol;
 mod ror;
 mod rti;
 mod rts;
+mod sbc;
