@@ -2,6 +2,7 @@ mod cpu;
 mod instructions;
 mod rom;
 mod commands;
+mod bus;
 
 extern crate clap;
 use clap::{App, Arg, SubCommand};

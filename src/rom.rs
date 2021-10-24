@@ -42,10 +42,12 @@ impl INes2Header {
         }
     }
 
+    // https://wiki.nesdev.org/w/index.php?title=NES_2.0#PRG-ROM_Area
     fn prg_rom_size_bytes(&self) -> u16 {
         self.data[4] as u16 * 0x4000u16
     }
 
+    // https://wiki.nesdev.org/w/index.php?title=NES_2.0#CHR-ROM_Area
     fn chr_rom_size_bytes(&self) -> u16 {
         self.data[5] as u16 * 0x2000u16
     }

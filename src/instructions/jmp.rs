@@ -46,10 +46,10 @@ mod test {
     fn indirect_jump() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem16(0xFF83, 0x118C);
+        cpu.write_mem16(0x0183, 0x118C);
 
         // When
-        JMP::new(Indirect(0xFF83)).execute(&mut cpu);
+        JMP::new(Indirect(0x0183)).execute(&mut cpu);
 
         // Then
         assert_eq!(0x118C, cpu.program_counter);

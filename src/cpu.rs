@@ -1,3 +1,5 @@
+use crate::bus::Bus;
+
 // http://wiki.nesdev.com/w/index.php/CPU_registers
 pub struct CPU {
     pub program_counter: u16,
@@ -6,7 +8,7 @@ pub struct CPU {
     pub index_register_x: u8,
     pub index_register_y: u8,
     pub processor_status: u8,  // http://wiki.nesdev.com/w/index.php/Status_flags
-    memory: [u8; 0xFFFF]
+    bus: Bus
 }
 
 impl CPU {
@@ -19,7 +21,7 @@ impl CPU {
             index_register_x: 0,
             index_register_y: 0,
             processor_status: 0,
-            memory: [0; 0xFFFF]
+            bus: Bus::new()
         }
     }
 
@@ -37,25 +39,6 @@ impl CPU {
         self.processor_status & bitmask == bitmask
     }
 
-    fn read_mem8(&self, addr: u16) -> u8 {
-        self.memory[addr as usize]
-    }
-
-    fn write_mem8(&mut self, addr: u16, val: u8) {
-        self.memory[addr as usize] = val;
-    }
-
-    pub fn read_mem16(&self, addr: u16) -> u16 {
-        let bytes = [self.read_mem8(addr), self.read_mem8(addr+1)];
-        u16::from_le_bytes(bytes)
-    }
-
-    pub fn write_mem16(&mut self, addr: u16, val: u16) {
-        let bytes: [u8; 2] = val.to_le_bytes();
-        self.write_mem8(addr, bytes[0]);
-        self.write_mem8(addr+1, bytes[1]);
-    }
-
     // See for reference:
     //  * www.obelisk.me.uk/6502/addressing.html
     //  * http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
@@ -70,10 +53,10 @@ impl CPU {
                 base.wrapping_add(self.index_register_y as u16)
             }
             &AddressingMode::IndirectX(base) => {
-                self.read_mem16(base.wrapping_add(self.index_register_x) as u16)
+                self.bus.read_mem16(base.wrapping_add(self.index_register_x) as u16)
             }
             &AddressingMode::IndirectY(address) => {
-                self.read_mem16(address as u16).wrapping_add(self.index_register_y as u16)
+                self.bus.read_mem16(address as u16).wrapping_add(self.index_register_y as u16)
             }
             &AddressingMode::ZeroPage(address) => address as u16,
             &AddressingMode::ZeroPageX(base) => {
@@ -91,7 +74,7 @@ impl CPU {
         match mode {
             &AddressingMode::Accumulator => self.accumulator,
             &AddressingMode::Immediate(value) => value,
-            am => self.read_mem8(self.mem_address(am))
+            am => self.bus.read_mem8(self.mem_address(am))
         }
     }
 
@@ -99,19 +82,27 @@ impl CPU {
         match mode {
             &AddressingMode::Accumulator => self.accumulator = value,
             &AddressingMode::Immediate(_) => {},
-            am => self.write_mem8(self.mem_address(am), value)
+            am => self.bus.write_mem8(self.mem_address(am), value)
         }
     }
 
     // See Stack Operations http://obelisk.me.uk/6502/instructions.html
     pub fn push_stack(&mut self, value: u8) {
-        self.write_mem8(self.stack_pointer as u16 | 0x0100, value);
+        self.bus.write_mem8(self.stack_pointer as u16 | 0x0100, value);
         self.stack_pointer -= 1;
     }
 
     pub fn pop_stack(&mut self) -> u8 {
         self.stack_pointer += 1;
-        self.read_mem8(self.stack_pointer as u16 | 0x0100)
+        self.bus.read_mem8(self.stack_pointer as u16 | 0x0100)
+    }
+
+    pub fn read_mem16(&self, addr: u16) -> u16 {
+        self.bus.read_mem16(addr)
+    }
+
+    pub fn write_mem16(&mut self, addr: u16, data: u16) {
+        self.bus.write_mem16(addr, data)
     }
 }
 
@@ -172,16 +163,6 @@ mod test {
     use crate::cpu::AddressingMode::*;
 
     #[test]
-    fn read_write_8bit_memory() {
-        // Given
-        let mut cpu = CPU::new();
-        cpu.write_mem8(0xFF00, 0x1A);
-
-        // Then
-        assert_eq!(0x1A, cpu.read_mem8(0xFF00));
-    }
-
-    #[test]
     fn read_write_16bit_memory() {
         // Given
         let mut cpu = CPU::new();
@@ -189,17 +170,6 @@ mod test {
 
         // Then
         assert_eq!(0xFF9B, cpu.read_mem16(0x0800));
-    }
-
-    #[test]
-    fn read_16bit_memory_little_endian() {
-        // Given
-        let mut cpu = CPU::new();
-        cpu.write_mem8(0x08A0, 0x10);
-        cpu.write_mem8(0x08A1, 0x28);
-
-        // Then
-        assert_eq!(0x2810, cpu.read_mem16(0x08A0));
     }
 
     #[test]
@@ -228,10 +198,10 @@ mod test {
     fn absolute_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0xF9EA, 0x8A);
+        cpu.bus.write_mem8(0x03EA, 0x8A);
 
         // Then
-        assert_eq!(0x8A, cpu.read(&Absolute(0xF9EA)));
+        assert_eq!(0x8A, cpu.read(&Absolute(0x03EA)));
     }
 
     #[test]
@@ -240,17 +210,17 @@ mod test {
         let mut cpu = CPU::new();
 
         // When
-        cpu.write(&Absolute(0xF9EA), 0x07);
+        cpu.write(&Absolute(0x02E6), 0x07);
 
         // Then
-        assert_eq!(0x07, cpu.read_mem16(0xF9EA));
+        assert_eq!(0x07, cpu.read_mem16(0x02E6));
     }
 
     #[test]
     fn absolute_x_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x8D, 0x09);
+        cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_x = 0x0A;
 
         // Then
@@ -261,7 +231,7 @@ mod test {
     fn absolute_x_no_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x0104, 0x29);
+        cpu.bus.write_mem8(0x0104, 0x29);
         cpu.index_register_x = 0x05;
 
         // Then
@@ -272,7 +242,7 @@ mod test {
     fn absolute_x_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x0003, 0x29);
+        cpu.bus.write_mem8(0x0003, 0x29);
         cpu.index_register_x = 0x05;
 
         // Then
@@ -289,7 +259,7 @@ mod test {
         cpu.write(&AbsoluteX(0x83), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x8D));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x8D));
     }
 
     #[test]
@@ -302,7 +272,7 @@ mod test {
         cpu.write(&AbsoluteX(0x00FF), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x0106));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x0106));
     }
 
     #[test]
@@ -315,14 +285,14 @@ mod test {
         cpu.write(&AbsoluteX(0xFFFD), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x0004));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x0004));
     }
 
     #[test]
     fn absolute_y_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x8D, 0x09);
+        cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_y = 0x0A;
 
         // Then
@@ -333,7 +303,7 @@ mod test {
     fn absolute_y_no_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x0104, 0x29);
+        cpu.bus.write_mem8(0x0104, 0x29);
         cpu.index_register_y = 0x05;
 
         // Then
@@ -344,7 +314,7 @@ mod test {
     fn absolute_y_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x0003, 0x29);
+        cpu.bus.write_mem8(0x0003, 0x29);
         cpu.index_register_y = 0x05;
 
         // Then
@@ -361,7 +331,7 @@ mod test {
         cpu.write(&AbsoluteY(0x83), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x8D));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x8D));
     }
 
     #[test]
@@ -374,7 +344,7 @@ mod test {
         cpu.write(&AbsoluteY(0x00FF), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x0106));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x0106));
     }
 
     #[test]
@@ -387,7 +357,7 @@ mod test {
         cpu.write(&AbsoluteY(0xFFFD), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x0004));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x0004));
     }
 
     #[test]
@@ -405,9 +375,9 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.index_register_x = 0x01;
-        cpu.write_mem8(0x01, 0x05);
-        cpu.write_mem8(0x02, 0x07);
-        cpu.write_mem8(0x0705, 0x0A);
+        cpu.bus.write_mem8(0x01, 0x05);
+        cpu.bus.write_mem8(0x02, 0x07);
+        cpu.bus.write_mem8(0x0705, 0x0A);
 
         // Then
         assert_eq!(0x0A, cpu.read(&IndirectX(0x00)));
@@ -419,14 +389,14 @@ mod test {
         // Given
         let mut cpu = CPU::new();
         cpu.index_register_x = 0x01;
-        cpu.write_mem8(0x01, 0x05);
-        cpu.write_mem8(0x02, 0x07);
+        cpu.bus.write_mem8(0x01, 0x05);
+        cpu.bus.write_mem8(0x02, 0x07);
 
         // When
         cpu.write(&IndirectX(0x00), 0x0A);
 
         // Then
-        assert_eq!(0x0A, cpu.read_mem8(0x0705));
+        assert_eq!(0x0A, cpu.bus.read_mem8(0x0705));
     }
 
 
@@ -437,9 +407,9 @@ mod test {
         let mut cpu = CPU::new();
 
         cpu.index_register_y = 0x01;
-        cpu.write_mem8(0x01, 0x03);
-        cpu.write_mem8(0x02, 0x07);
-        cpu.write_mem8(0x0704, 0x0A);
+        cpu.bus.write_mem8(0x01, 0x03);
+        cpu.bus.write_mem8(0x02, 0x07);
+        cpu.bus.write_mem8(0x0704, 0x0A);
 
         // Then
         assert_eq!(0x0A, cpu.read(&IndirectY(0x01)));
@@ -452,21 +422,21 @@ mod test {
         let mut cpu = CPU::new();
 
         cpu.index_register_y = 0x01;
-        cpu.write_mem8(0x01, 0x03);
-        cpu.write_mem8(0x02, 0x07);
+        cpu.bus.write_mem8(0x01, 0x03);
+        cpu.bus.write_mem8(0x02, 0x07);
 
         // When
         cpu.write(&IndirectY(0x01), 0x0A);
 
         // Then
-        assert_eq!(0x0A, cpu.read_mem8(0x0704));
+        assert_eq!(0x0A, cpu.bus.read_mem8(0x0704));
     }
 
     #[test]
     fn zero_page_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0xA8, 0x0C);
+        cpu.bus.write_mem8(0xA8, 0x0C);
 
         // Then
         assert_eq!(0x0C, cpu.read(&ZeroPage(0xA8)));
@@ -481,14 +451,14 @@ mod test {
         cpu.write(&ZeroPage(0xA8), 0xF1);
 
         // Then
-        assert_eq!(0xF1, cpu.read_mem8(0xA8));
+        assert_eq!(0xF1, cpu.bus.read_mem8(0xA8));
     }
 
     #[test]
     fn zero_page_x_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x8D, 0x09);
+        cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_x = 0x0A;
 
         // Then
@@ -499,7 +469,7 @@ mod test {
     fn zero_page_x_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x04, 0x29);
+        cpu.bus.write_mem8(0x04, 0x29);
         cpu.index_register_x = 0x05;
 
         // Then
@@ -516,7 +486,7 @@ mod test {
         cpu.write(&ZeroPageX(0x83), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x8D));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x8D));
     }
 
     #[test]
@@ -529,14 +499,14 @@ mod test {
         cpu.write(&ZeroPageX(0xFF), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x06));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x06));
     }
 
     #[test]
     fn zero_page_y_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x8D, 0x09);
+        cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_y = 0x0A;
 
         // Then
@@ -547,7 +517,7 @@ mod test {
     fn zero_page_y_wrap_around_read() {
         // Given
         let mut cpu = CPU::new();
-        cpu.write_mem8(0x04, 0x29);
+        cpu.bus.write_mem8(0x04, 0x29);
         cpu.index_register_y = 0x05;
 
         // Then
@@ -564,7 +534,7 @@ mod test {
         cpu.write(&ZeroPageY(0x83), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x8D));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x8D));
     }
 
     #[test]
@@ -577,7 +547,7 @@ mod test {
         cpu.write(&ZeroPageY(0xFF), 0x09);
 
         // Then
-        assert_eq!(0x09, cpu.read_mem8(0x06));
+        assert_eq!(0x09, cpu.bus.read_mem8(0x06));
     }
 
     #[test]
@@ -592,9 +562,9 @@ mod test {
 
         // Then
         assert_eq!(0xFA, cpu.stack_pointer);
-        assert_eq!(0x83, cpu.read_mem8(0x01FD));
-        assert_eq!(0x04, cpu.read_mem8(0x01FC));
-        assert_eq!(0xF3, cpu.read_mem8(0x01FB));
+        assert_eq!(0x83, cpu.bus.read_mem8(0x01FD));
+        assert_eq!(0x04, cpu.bus.read_mem8(0x01FC));
+        assert_eq!(0xF3, cpu.bus.read_mem8(0x01FB));
     }
 
     #[test]

@@ -59,7 +59,7 @@ mod test {
         cpu.index_register_x = 0x02;
 
         // When
-        let mode = Absolute(0x2A88);
+        let mode = Absolute(0x0288);
         cpu.write(&mode, 0x6F);
         CPY::new(mode).execute(&mut cpu);
 
