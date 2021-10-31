@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TAX
-struct TAX {}
+pub(super) struct TAX {}
 
 impl Instruction for TAX {
     fn execute(&self, cpu: &mut CPU) {

@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#RTS
-struct RTS {}
+pub(super) struct RTS {}
 
 impl Instruction for RTS {
     fn execute(&self, cpu: &mut CPU) {

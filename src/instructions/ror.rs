@@ -1,12 +1,12 @@
 use crate::cpu::{Instruction, CPU, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ROR
-struct ROR {
+pub(super) struct ROR {
     mode: AddressingMode
 }
 
 impl ROR {
-    fn new(mode: AddressingMode) -> Self {
+    pub fn new(mode: AddressingMode) -> Self {
         ROR{ mode }
     }
 }

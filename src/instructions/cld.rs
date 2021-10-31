@@ -3,7 +3,7 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 // http://www.obelisk.me.uk/6502/reference.html#CLD
 // Note:  NES hardware doesn't even support this mode, so this
 // likely will never be used...
-pub struct CLD {}
+pub(super) struct CLD {}
 
 impl Instruction for CLD {
     fn execute(&self, cpu: &mut CPU) {

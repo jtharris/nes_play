@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#DEY
-pub struct DEY {}
+pub(super) struct DEY {}
 
 impl Instruction for DEY {
     fn execute(&self, cpu: &mut CPU) {

@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#RTI
-struct RTI {}
+pub(super) struct RTI {}
 
 impl Instruction for RTI {
     fn execute(&self, cpu: &mut CPU) {

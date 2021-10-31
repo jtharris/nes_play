@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#INX
-pub struct INX {}
+pub(super) struct INX {}
 
 impl Instruction for INX {
     fn execute(&self, cpu: &mut CPU) {

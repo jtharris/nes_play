@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#DEX
-pub struct DEX {}
+pub(super) struct DEX {}
 
 impl Instruction for DEX {
     fn execute(&self, cpu: &mut CPU) {

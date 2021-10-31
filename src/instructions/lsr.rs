@@ -1,17 +1,17 @@
 use crate::cpu::{CPU, Instruction, AddressingMode, StatusFlag};
 
-// http://www.obelisk.me.uk/6502/reference.html#LRS
-pub struct LRS {
+// http://www.obelisk.me.uk/6502/reference.html#LSR
+pub(super) struct LSR {
     mode: AddressingMode
 }
 
-impl LRS {
+impl LSR {
     pub fn new(mode: AddressingMode) -> Self {
-        LRS{ mode }
+        LSR{ mode }
     }
 }
 
-impl Instruction for LRS {
+impl Instruction for LSR {
     fn execute(&self, cpu: &mut CPU) {
         let value = cpu.read(&self.mode);
         let carry = value & 0x01 == 0x01;
@@ -28,7 +28,7 @@ impl Instruction for LRS {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::instructions::lsr::LRS;
+    use crate::instructions::lsr::LSR;
     use crate::cpu::AddressingMode::{Accumulator, ZeroPage};
 
     #[test]
@@ -38,7 +38,7 @@ mod test {
         cpu.accumulator = 0b00001010;
 
         // When
-        LRS::new(Accumulator).execute(&mut cpu);
+        LSR::new(Accumulator).execute(&mut cpu);
 
         // Then
         assert_eq!(0b00000101, cpu.accumulator);
@@ -52,7 +52,7 @@ mod test {
         cpu.write(&ZeroPage(0x88), 0x01);
 
         // When
-        LRS::new(ZeroPage(0x88)).execute(&mut cpu);
+        LSR::new(ZeroPage(0x88)).execute(&mut cpu);
 
         // Then
         assert_eq!(0x00, cpu.read(&ZeroPage(0x88)));
@@ -67,7 +67,7 @@ mod test {
         cpu.processor_status = 0x80;
 
         // When
-        LRS::new(Accumulator).execute(&mut cpu);
+        LSR::new(Accumulator).execute(&mut cpu);
 
         // Then
         assert_eq!(0x7F, cpu.accumulator);

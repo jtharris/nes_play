@@ -1,7 +1,7 @@
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#AND
-struct AND {
+pub(super) struct AND {
     mode: AddressingMode
 }
 

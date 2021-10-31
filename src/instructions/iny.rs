@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#INY
-pub struct INY {}
+pub(super) struct INY {}
 
 impl Instruction for INY {
     fn execute(&self, cpu: &mut CPU) {

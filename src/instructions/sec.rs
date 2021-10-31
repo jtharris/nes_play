@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SEC
-struct SEC {}
+pub(super) struct SEC {}
 
 impl Instruction for SEC {
     fn execute(&self, cpu: &mut CPU) {

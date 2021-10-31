@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SEI
-struct SEI {}
+pub(super) struct SEI {}
 
 impl Instruction for SEI {
     fn execute(&self, cpu: &mut CPU) {

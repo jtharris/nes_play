@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TYA
-struct TYA {}
+pub(super) struct TYA {}
 
 impl Instruction for TYA {
     fn execute(&self, cpu: &mut CPU) {

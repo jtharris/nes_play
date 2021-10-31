@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TXA
-struct TXA {}
+pub(super) struct TXA {}
 
 impl Instruction for TXA {
     fn execute(&self, cpu: &mut CPU) {

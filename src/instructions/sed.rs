@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SED
-struct SED {}
+pub(super) struct SED {}
 
 impl Instruction for SED {
     fn execute(&self, cpu: &mut CPU) {

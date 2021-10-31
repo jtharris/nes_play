@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#CLV
-pub struct CLV {}
+pub(super) struct CLV {}
 
 impl Instruction for CLV {
     fn execute(&self, cpu: &mut CPU) {

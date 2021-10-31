@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TAY
-struct TAY {}
+pub(super) struct TAY {}
 
 impl Instruction for TAY {
     fn execute(&self, cpu: &mut CPU) {
