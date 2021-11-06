@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#TXS
-struct TXS {}
+pub(super) struct TXS {}
 
 impl Instruction for TXS {
     fn execute(&self, cpu: &mut CPU) {

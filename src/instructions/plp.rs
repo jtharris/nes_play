@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#PLP
-struct PLP {}
+pub(super) struct PLP {}
 
 impl Instruction for PLP {
     fn execute(&self, cpu: &mut CPU) {

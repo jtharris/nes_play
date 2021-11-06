@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TSX
-struct TSX {}
+pub(super) struct TSX {}
 
 impl Instruction for TSX {
     fn execute(&self, cpu: &mut CPU) {

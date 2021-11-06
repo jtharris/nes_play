@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#PHP
-struct PHP {}
+pub(super) struct PHP {}
 
 impl Instruction for PHP {
     fn execute(&self, cpu: &mut CPU) {

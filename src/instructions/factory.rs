@@ -12,6 +12,10 @@ use crate::instructions::inx::INX;
 use crate::instructions::iny::INY;
 use crate::instructions::lsr::LSR;
 use crate::instructions::nop::NOP;
+use crate::instructions::pha::PHA;
+use crate::instructions::php::PHP;
+use crate::instructions::pla::PLA;
+use crate::instructions::plp::PLP;
 use crate::instructions::rol::ROL;
 use crate::instructions::ror::ROR;
 use crate::instructions::rti::RTI;
@@ -21,7 +25,9 @@ use crate::instructions::sed::SED;
 use crate::instructions::sei::SEI;
 use crate::instructions::tax::TAX;
 use crate::instructions::tay::TAY;
+use crate::instructions::tsx::TSX;
 use crate::instructions::txa::TXA;
+use crate::instructions::txs::TXS;
 use crate::instructions::tya::TYA;
 
 struct InstructionExecution {
@@ -135,8 +141,30 @@ fn generate_1byte_instruction(opcode: u8) -> InstructionExecution {
             cycles: 6,
             instruction: Box::new(RTS{})
         },
-        // TODO:  Stack instructions, etc.
-
+        0x9A => InstructionExecution {
+            cycles: 2,
+            instruction: Box::new(TXS{})
+        },
+        0xBA => InstructionExecution {
+            cycles: 2,
+            instruction: Box::new(TSX{})
+        },
+        0x48 => InstructionExecution {
+            cycles: 3,
+            instruction: Box::new(PHA{})
+        },
+        0x68 => InstructionExecution {
+            cycles: 4,
+            instruction: Box::new(PLA{})
+        },
+        0x08 => InstructionExecution {
+            cycles: 3,
+            instruction: Box::new(PHP{})
+        },
+        0x28 => InstructionExecution {
+            cycles: 4,
+            instruction: Box::new(PLP{})
+        },
         _ => InstructionExecution {
             cycles: 0,
             instruction: Box::new(Unknown::new(opcode))

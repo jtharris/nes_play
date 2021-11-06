@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#PHA
-struct PHA {}
+pub(super) struct PHA {}
 
 impl Instruction for PHA {
     fn execute(&self, cpu: &mut CPU) {

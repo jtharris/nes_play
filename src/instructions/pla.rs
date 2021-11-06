@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#PLA
-struct PLA {}
+pub(super) struct PLA {}
 
 impl Instruction for PLA {
     fn execute(&self, cpu: &mut CPU) {
