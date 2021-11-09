@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#BIT
-struct BIT {
+pub(super) struct BIT {
     mode: AddressingMode
 }
 
