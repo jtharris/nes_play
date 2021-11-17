@@ -4,11 +4,13 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct TAY {}
 
 impl Instruction for TAY {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.index_register_y = cpu.accumulator;
 
         cpu.set_flag(StatusFlag::Zero, cpu.index_register_y == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.index_register_y > 0x7F);
+
+        2
     }
 }
 

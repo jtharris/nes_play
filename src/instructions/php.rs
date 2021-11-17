@@ -4,10 +4,12 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct PHP {}
 
 impl Instruction for PHP {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         // See http://wiki.nesdev.com/w/index.php/Status_flags#The_B_flag
         // for description of B-flag behavior
         cpu.push_stack(cpu.processor_status | 0b0001_1000);
+
+        3
     }
 }
 

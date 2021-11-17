@@ -12,7 +12,7 @@ impl ROR {
 }
 
 impl Instruction for ROR {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let value = cpu.read(&self.mode);
         let new_carry = value & 0x01 == 0x01;
         let mut new_value = value >> 1;
@@ -25,6 +25,8 @@ impl Instruction for ROR {
         cpu.set_flag(StatusFlag::Carry, new_carry);
         cpu.set_flag(StatusFlag::Zero, new_value == 0);
         cpu.set_flag(StatusFlag::Negative, new_value > 0x7F);
+
+        cpu.memory_cycles(&self.mode)
     }
 }
 

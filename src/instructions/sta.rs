@@ -12,8 +12,19 @@ impl STA {
 }
 
 impl Instruction for STA {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.write(&self.mode, cpu.accumulator);
+
+        match self.mode {
+            AddressingMode::ZeroPage(_) => 3,
+            AddressingMode::ZeroPageX(_) => 4,
+            AddressingMode::Absolute(_) => 4,
+            AddressingMode::AbsoluteX(_) => 5,
+            AddressingMode::AbsoluteY(_) => 5,
+            AddressingMode::IndirectX(_) => 6,
+            AddressingMode::IndirectY(_) => 6,
+            _ => panic!("Invalid addressing mode for STA")
+        }
     }
 }
 

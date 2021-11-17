@@ -4,11 +4,13 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct TSX {}
 
 impl Instruction for TSX {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.index_register_x = cpu.stack_pointer;
 
         cpu.set_flag(StatusFlag::Zero, cpu.index_register_x == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.index_register_x > 0x7F);
+
+        2
     }
 }
 

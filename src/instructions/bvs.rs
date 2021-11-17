@@ -12,9 +12,12 @@ impl BVS {
 }
 
 impl Instruction for BVS {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         if cpu.get_flag(StatusFlag::Overflow) {
-            cpu.program_counter = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
+            let new_pc = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
+            3 + cpu.set_pc(new_pc)
+        } else {
+            2
         }
     }
 }

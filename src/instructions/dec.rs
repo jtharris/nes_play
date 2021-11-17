@@ -12,12 +12,14 @@ impl DEC {
 }
 
 impl Instruction for DEC {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let (val, _) = cpu.read(&self.mode).overflowing_sub(1);
         cpu.write(&self.mode, val);
 
         cpu.set_flag(StatusFlag::Zero,  val == 0);
         cpu.set_flag(StatusFlag::Negative, val > 0x7F);
+
+        cpu.memory_cycles(&self.mode)
     }
 }
 

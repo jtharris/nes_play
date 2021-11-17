@@ -4,8 +4,10 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct PLP {}
 
 impl Instruction for PLP {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.processor_status = cpu.pop_stack();
+
+        4
     }
 }
 

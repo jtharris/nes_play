@@ -12,7 +12,7 @@ impl LSR {
 }
 
 impl Instruction for LSR {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let value = cpu.read(&self.mode);
         let carry = value & 0x01 == 0x01;
         let shifted = value >> 1;
@@ -22,6 +22,8 @@ impl Instruction for LSR {
         cpu.set_flag(StatusFlag::Carry, carry);
         cpu.set_flag(StatusFlag::Zero, shifted == 0);
         cpu.set_flag(StatusFlag::Negative, false);
+
+        cpu.memory_cycles(&self.mode)
     }
 }
 

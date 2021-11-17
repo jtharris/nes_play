@@ -4,11 +4,13 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct TXA {}
 
 impl Instruction for TXA {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.accumulator = cpu.index_register_x;
 
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        2
     }
 }
 

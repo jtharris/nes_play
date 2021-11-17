@@ -4,7 +4,5 @@ use crate::cpu::{Instruction, CPU};
 pub struct NOP {}
 
 impl Instruction for NOP {
-    fn execute(&self, _cpu: &mut CPU) {
-        // no-op!
-    }
+    fn execute(&self, _cpu: &mut CPU) -> u8 { 2 }
 }

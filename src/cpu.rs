@@ -70,6 +70,43 @@ impl CPU {
         }
     }
 
+    pub fn default_cycles(&self, mode: &AddressingMode) -> u8 {
+        let base_cycles = match mode {
+            &AddressingMode::Accumulator => 0,
+            &AddressingMode::Immediate(_) => 2,
+            &AddressingMode::ZeroPage(_) => 3,
+            &AddressingMode::ZeroPageX(_) => 4,
+            &AddressingMode::ZeroPageY(_) => 4,
+            &AddressingMode::Absolute(_) => 4,
+            &AddressingMode::AbsoluteX(base) => 4,
+            &AddressingMode::AbsoluteY(base) => 4,
+            &AddressingMode::IndirectX(_) => 6,
+            &AddressingMode::IndirectY(address) => 5,
+        };
+
+        base_cycles + self.extra_cycles(mode)
+    }
+
+    fn extra_cycles(&self, mode: &AddressingMode) -> u8 {
+        match mode {
+            &AddressingMode::AbsoluteX(_) | 
+            &AddressingMode::AbsoluteY(_) | 
+            &AddressingMode::IndirectY(_) => if self.mem_address(mode) > 0xFF { 1 } else { 0 },
+            _ => 0
+        }
+    }
+
+    pub fn memory_cycles(&self, mode: &AddressingMode) -> u8 {
+        match mode {
+            &AddressingMode::Accumulator => 2,
+            &AddressingMode::ZeroPage(_) => 5,
+            &AddressingMode::ZeroPageX(_) => 6,
+            &AddressingMode::Absolute(_) => 6,
+            &AddressingMode::AbsoluteX(_) => 7,
+            _ => panic!("Invalid addressing mode for memory cycles")
+        }
+    }
+
     pub fn read(&self, mode: &AddressingMode) -> u8 {
         match mode {
             &AddressingMode::Accumulator => self.accumulator,
@@ -103,6 +140,18 @@ impl CPU {
 
     pub fn write_mem16(&mut self, addr: u16, data: u16) {
         self.bus.write_mem16(addr, data)
+    }
+
+    // Returns a 1 if page boundary was crossed, 0 otherwise
+    pub fn set_pc(&mut self, value: u16) -> u8 {
+        let old_pc = self.program_counter;
+        self.program_counter = value;
+
+        if old_pc >> 8 == value >> 8 {
+            0
+        } else {
+            1
+        }
     }
 }
 
@@ -152,8 +201,9 @@ pub enum AddressingMode {
 // Instructions are implemented as a visitor pattern, each being executable on
 // a given CPU reference
 // For instruction reference, see:  http://www.obelisk.me.uk/6502/reference.html
+// Return value is the number of machine cycles take to execute
 pub trait Instruction {
-    fn execute(&self, cpu: &mut CPU);
+    fn execute(&self, cpu: &mut CPU) -> u8;
 }
 
 

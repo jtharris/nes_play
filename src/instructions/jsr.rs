@@ -12,13 +12,15 @@ impl JSR {
 }
 
 impl Instruction for JSR {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         // I *think* using big endian is due to the stack decrementing instead of incrementing...?
         let return_address = cpu.program_counter - 1;
         let bytes: [u8; 2] = return_address.to_be_bytes();
         cpu.push_stack(bytes[0]);
         cpu.push_stack(bytes[1]);
         cpu.program_counter = self.target;
+
+        6
     }
 }
 

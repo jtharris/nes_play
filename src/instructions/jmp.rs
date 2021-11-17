@@ -17,11 +17,16 @@ impl JMP {
 }
 
 impl Instruction for JMP {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.program_counter = match self.mode {
             JumpAddressMode::Absolute(target) => target,
             JumpAddressMode::Indirect(address) => cpu.read_mem16(address)
         };
+
+        match self.mode {
+            JumpAddressMode::Absolute(_) => 3,
+            JumpAddressMode::Indirect(_) => 5,
+        }
     }
 }
 

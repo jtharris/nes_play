@@ -4,8 +4,10 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct TXS {}
 
 impl Instruction for TXS {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.stack_pointer = cpu.index_register_x;
+
+        2
     }
 }
 

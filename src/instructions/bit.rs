@@ -12,12 +12,14 @@ impl BIT {
 }
 
 impl Instruction for BIT {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let val = cpu.accumulator & cpu.read(&self.mode);
 
         cpu.set_flag(StatusFlag::Zero, val == 0);
         cpu.set_flag(StatusFlag::Overflow, val & 0x40 == 0x40);  // if 6th bit is set
         cpu.set_flag(StatusFlag::Negative, val > 0x7F);          // if 7th bit is set
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

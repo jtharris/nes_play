@@ -12,12 +12,14 @@ impl CPX {
 }
 
 impl Instruction for CPX {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let mem = cpu.read(&self.mode);
 
         cpu.set_flag(StatusFlag::Carry, cpu.index_register_x >= mem);
         cpu.set_flag(StatusFlag::Zero, cpu.index_register_x == mem);
         cpu.set_flag(StatusFlag::Negative, cpu.index_register_x > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

@@ -4,8 +4,10 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct SED {}
 
 impl Instruction for SED {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::Decimal, true);
+
+        2
     }
 }
 

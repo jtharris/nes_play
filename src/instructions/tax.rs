@@ -4,11 +4,13 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct TAX {}
 
 impl Instruction for TAX {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.index_register_x = cpu.accumulator;
 
         cpu.set_flag(StatusFlag::Zero, cpu.index_register_x == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.index_register_x > 0x7F);
+
+        2
     }
 }
 

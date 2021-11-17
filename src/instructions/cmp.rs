@@ -12,12 +12,14 @@ impl CMP {
 }
 
 impl Instruction for CMP {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let mem = cpu.read(&self.mode);
 
         cpu.set_flag(StatusFlag::Carry, cpu.accumulator >= mem);
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == mem);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

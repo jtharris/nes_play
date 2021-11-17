@@ -12,8 +12,10 @@ impl STY {
 }
 
 impl Instruction for STY {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.write(&self.mode, cpu.index_register_y);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

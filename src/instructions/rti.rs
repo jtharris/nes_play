@@ -4,12 +4,14 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct RTI {}
 
 impl Instruction for RTI {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.processor_status = cpu.pop_stack();
 
         let low_pc = cpu.pop_stack();
         let high_pc = cpu.pop_stack();
         cpu.program_counter = u16::from_be_bytes([high_pc, low_pc]);
+
+        6
     }
 }
 

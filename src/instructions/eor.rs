@@ -12,12 +12,14 @@ impl EOR {
 }
 
 impl Instruction for EOR {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let memory_value= cpu.read(&self.mode);
         cpu.accumulator ^= memory_value;
 
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

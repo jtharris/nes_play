@@ -4,10 +4,12 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct RTS {}
 
 impl Instruction for RTS {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let low_pc = cpu.pop_stack();
         let high_pc = cpu.pop_stack();
         cpu.program_counter = u16::from_be_bytes([high_pc, low_pc]);
+
+        6
     }
 }
 

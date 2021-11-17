@@ -12,8 +12,8 @@ impl ADC {
 }
 
 impl Instruction for ADC {
-    fn execute(&self, cpu: &mut CPU) {
-        let memory_value= cpu.read(&self.mode);
+    fn execute(&self, cpu: &mut CPU) -> u8 {
+        let memory_value = cpu.read(&self.mode);
         let existing_carry = cpu.processor_status & 0x01;
         let sum = memory_value as u16 + existing_carry as u16 + cpu.accumulator as u16;
 
@@ -27,6 +27,8 @@ impl Instruction for ADC {
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Overflow, overflow);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

@@ -12,8 +12,10 @@ impl STX {
 }
 
 impl Instruction for STX {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.write(&self.mode, cpu.index_register_x);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

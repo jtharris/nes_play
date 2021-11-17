@@ -49,234 +49,63 @@ impl Unknown {
 }
 
 impl Instruction for Unknown {
-    fn execute(&self, cpu: &mut CPU) {
-        panic!("Unknown opcode encountered!  {}", self.opcode)
+    fn execute(&self, cpu: &mut CPU) -> u8 {
+        panic!("Unknown opcode encountered!  {}", self.opcode);
+        0
     }
 }
 
-fn generate_1byte_instruction(opcode: u8) -> InstructionExecution {
+fn generate_1byte_instruction(opcode: u8) -> Box<dyn Instruction> {
     match opcode {
-        0x0A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(ASL::new(Accumulator))
-        },
-        0x18 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(CLC{})
-        },
-        0x38 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(SEC{})
-        },
-        0x58 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(CLI{})
-        },
-        0x78 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(SEI{})
-        },
-        0xB8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(CLV{})
-        },
-        0xD8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(CLD{})
-        },
-        0xF8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(SED{})
-        },
-        0x4A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(LSR::new(Accumulator))
-        },
-        0xEA => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(NOP{})
-        },
-        0xAA => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TAX{})
-        },
-        0x8A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TXA{})
-        },
-        0xCA => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(DEX{})
-        },
-        0xE8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(INX{})
-        },
-        0xA8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TAY{})
-        },
-        0x98 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TYA{})
-        },
-        0x88 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(DEY{})
-        },
-        0xC8 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(INY{})
-        },
-        0x2A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(ROL::new(Accumulator))
-        },
-        0x6A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(ROR::new(Accumulator))
-        },
-        0x40 => InstructionExecution {
-            cycles: 6,
-            page_boundary_cycle: false,
-            instruction: Box::new(RTI{})
-        },
-        0x60 => InstructionExecution {
-            cycles: 6,
-            page_boundary_cycle: false,
-            instruction: Box::new(RTS{})
-        },
-        0x9A => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TXS{})
-        },
-        0xBA => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(TSX{})
-        },
-        0x48 => InstructionExecution {
-            cycles: 3,
-            page_boundary_cycle: false,
-            instruction: Box::new(PHA{})
-        },
-        0x68 => InstructionExecution {
-            cycles: 4,
-            page_boundary_cycle: false,
-            instruction: Box::new(PLA{})
-        },
-        0x08 => InstructionExecution {
-            cycles: 3,
-            page_boundary_cycle: false,
-            instruction: Box::new(PHP{})
-        },
-        0x28 => InstructionExecution {
-            cycles: 4,
-            page_boundary_cycle: false,
-            instruction: Box::new(PLP{})
-        },
-        _ => InstructionExecution {
-            cycles: 0,
-            page_boundary_cycle: false,
-            instruction: Box::new(Unknown::new(opcode))
-        }
+        0x0A => Box::new(ASL::new(Accumulator)),
+        0x18 => Box::new(CLC{}),
+        0x38 => Box::new(SEC{}),
+        0x58 => Box::new(CLI{}),
+        0x78 => Box::new(SEI{}),
+        0xB8 => Box::new(CLV{}),
+        0xD8 => Box::new(CLD{}),
+        0xF8 => Box::new(SED{}),
+        0x4A => Box::new(LSR::new(Accumulator)),
+        0xEA => Box::new(NOP{}),
+        0xAA => Box::new(TAX{}),
+        0x8A => Box::new(TXA{}),
+        0xCA => Box::new(DEX{}),
+        0xE8 => Box::new(INX{}),
+        0xA8 => Box::new(TAY{}),
+        0x98 => Box::new(TYA{}),
+        0x88 => Box::new(DEY{}),
+        0xC8 => Box::new(INY{}),
+        0x2A => Box::new(ROL::new(Accumulator)),
+        0x6A => Box::new(ROR::new(Accumulator)),
+        0x40 => Box::new(RTI{}),
+        0x60 => Box::new(RTS{}),
+        0x9A => Box::new(TXS{}),
+        0xBA => Box::new(TSX{}),
+        0x48 => Box::new(PHA{}),
+        0x68 => Box::new(PLA{}),
+        0x08 => Box::new(PHP{}),
+        0x28 => Box::new(PLP{}),
+        _ => Box::new(Unknown::new(opcode))
     }
 }
 
-fn generate_2byte_instruction(opcode: u8, arg: u8) -> InstructionExecution {
+fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
     match opcode {
-        0x69 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(ADC::new(Immediate(arg)))
-        },
-        0x65 => InstructionExecution {
-            cycles: 3,
-            page_boundary_cycle: false,
-            instruction: Box::new(ADC::new(ZeroPage(arg)))
-        },
-        0x75 => InstructionExecution {
-            cycles: 4,
-            page_boundary_cycle: false,
-            instruction: Box::new(ADC::new(ZeroPageX(arg)))
-        },
-        0x61 => InstructionExecution {
-            cycles: 6,
-            page_boundary_cycle: false,
-            instruction: Box::new(ADC::new(IndirectX(arg)))
-        },
-        0x71 => InstructionExecution {
-            cycles: 5,
-            page_boundary_cycle: true,
-            instruction: Box::new(ADC::new(IndirectY(arg)))
-        },
-        0x29 => InstructionExecution {
-            cycles: 2,
-            page_boundary_cycle: false,
-            instruction: Box::new(AND::new(Immediate(arg)))
-        },
-        0x25 => InstructionExecution {
-            cycles: 3,
-            page_boundary_cycle: false,
-            instruction: Box::new(AND::new(ZeroPage(arg)))
-        },
-        0x35 => InstructionExecution {
-            cycles: 4,
-            page_boundary_cycle: false,
-            instruction: Box::new(AND::new(ZeroPageX(arg)))
-        },
-        0x21 => InstructionExecution {
-            cycles: 6,
-            page_boundary_cycle: false,
-            instruction: Box::new(AND::new(IndirectX(arg)))
-        },
-        0x31 => InstructionExecution {
-            cycles: 5,
-            page_boundary_cycle: true,
-            instruction: Box::new(AND::new(IndirectY(arg)))
-        },
-        0x06 => InstructionExecution {
-            cycles: 5,
-            page_boundary_cycle: false,
-            instruction: Box::new(ASL::new(ZeroPage(arg)))
-        },
-        0x16 => InstructionExecution {
-            cycles: 6,
-            page_boundary_cycle: false,
-            instruction: Box::new(ASL::new(ZeroPageX(arg)))
-        },
-        0x24 => InstructionExecution {
-            cycles: 3,
-            page_boundary_cycle: false,
-            instruction: Box::new(BIT::new(ZeroPage(arg)))
-        },
+        0x69 => Box::new(ADC::new(Immediate(arg))),
+        0x65 => Box::new(ADC::new(ZeroPage(arg))),
+        0x75 => Box::new(ADC::new(ZeroPageX(arg))),
+        0x61 => Box::new(ADC::new(IndirectX(arg))),
+        0x71 => Box::new(ADC::new(IndirectY(arg))),
+        0x29 => Box::new(AND::new(Immediate(arg))),
+        0x25 => Box::new(AND::new(ZeroPage(arg))),
+        0x35 => Box::new(AND::new(ZeroPageX(arg))),
+        0x21 => Box::new(AND::new(IndirectX(arg))),
+        0x31 => Box::new(AND::new(IndirectY(arg))),
+        0x06 => Box::new(ASL::new(ZeroPage(arg))),
+        0x16 => Box::new(ASL::new(ZeroPageX(arg))),
+        0x24 => Box::new(BIT::new(ZeroPage(arg))),
 
-        _ => InstructionExecution {
-            cycles: 0,
-            page_boundary_cycle: false,
-            instruction: Box::new(Unknown::new(opcode))
-        }
+        _ => Box::new(Unknown::new(opcode))
     }
 }
 

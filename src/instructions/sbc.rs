@@ -12,7 +12,7 @@ impl SBC {
 }
 
 impl Instruction for SBC {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let memory_value= cpu.read(&self.mode) as u16;
         let existing_carry = (cpu.processor_status & 0x01) as u16;
 
@@ -30,6 +30,8 @@ impl Instruction for SBC {
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Overflow, overflow);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

@@ -4,11 +4,13 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct TYA {}
 
 impl Instruction for TYA {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.accumulator = cpu.index_register_y;
 
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        2
     }
 }
 

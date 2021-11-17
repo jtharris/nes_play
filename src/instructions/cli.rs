@@ -4,8 +4,9 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 pub struct CLI {}
 
 impl Instruction for CLI {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::InterruptDisable, false);
+        2
     }
 }
 

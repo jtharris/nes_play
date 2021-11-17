@@ -4,8 +4,10 @@ use crate::cpu::{Instruction, CPU};
 pub(super) struct PHA {}
 
 impl Instruction for PHA {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.push_stack(cpu.accumulator);
+
+        3
     }
 }
 

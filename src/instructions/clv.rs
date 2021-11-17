@@ -4,8 +4,9 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 pub(super) struct CLV {}
 
 impl Instruction for CLV {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::Overflow, false);
+        2
     }
 }
 

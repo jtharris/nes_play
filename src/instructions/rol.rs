@@ -12,7 +12,7 @@ impl ROL {
 }
 
 impl Instruction for ROL {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let value = cpu.read(&self.mode);
         let new_carry = value > 0x7F;
         let mut new_value = value << 1;
@@ -25,6 +25,8 @@ impl Instruction for ROL {
         cpu.set_flag(StatusFlag::Carry, new_carry);
         cpu.set_flag(StatusFlag::Zero, new_value == 0);
         cpu.set_flag(StatusFlag::Negative, new_value > 0x7F);
+
+        cpu.memory_cycles(&self.mode)
     }
 }
 

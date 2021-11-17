@@ -4,8 +4,9 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 pub struct CLC {}
 
 impl Instruction for CLC {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::Carry, false);
+        2
     }
 }
 

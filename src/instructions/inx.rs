@@ -4,12 +4,14 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 pub(super) struct INX {}
 
 impl Instruction for INX {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let (val, _) = cpu.index_register_x.overflowing_add(1);
         cpu.index_register_x = val;
 
         cpu.set_flag(StatusFlag::Zero,  val == 0);
         cpu.set_flag(StatusFlag::Negative, val > 0x7F);
+
+        2
     }
 }
 

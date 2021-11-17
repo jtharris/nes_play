@@ -12,7 +12,7 @@ impl ASL {
 }
 
 impl Instruction for ASL {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         let mem_value = cpu.read(&self.mode);
         let shifted_value = mem_value << 1;
 
@@ -20,6 +20,8 @@ impl Instruction for ASL {
         cpu.set_flag(StatusFlag::Carry, mem_value > 0x7F);
         cpu.set_flag(StatusFlag::Zero, shifted_value == 0);
         cpu.set_flag(StatusFlag::Negative, shifted_value > 0x7F);
+
+        cpu.memory_cycles(&self.mode)
     }
 }
 

@@ -6,8 +6,9 @@ use crate::cpu::{CPU, Instruction, StatusFlag};
 pub(super) struct CLD {}
 
 impl Instruction for CLD {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::Decimal, false);
+        2
     }
 }
 

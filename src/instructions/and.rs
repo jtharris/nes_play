@@ -12,11 +12,13 @@ impl AND {
 }
 
 impl Instruction for AND {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.accumulator &= cpu.read(&self.mode);
 
         cpu.set_flag(StatusFlag::Zero, cpu.accumulator == 0);
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
+
+        cpu.default_cycles(&self.mode)
     }
 }
 

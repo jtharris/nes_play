@@ -4,8 +4,10 @@ use crate::cpu::{Instruction, CPU, StatusFlag};
 pub(super) struct SEC {}
 
 impl Instruction for SEC {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.set_flag(StatusFlag::Carry, true);
+
+        2
     }
 }
 
