@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction};
 
 // http://www.obelisk.me.uk/6502/reference.html#JSR
-pub struct JSR {
+pub(super) struct JSR {
     target: u16
 }
 

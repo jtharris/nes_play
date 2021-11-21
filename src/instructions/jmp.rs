@@ -1,12 +1,12 @@
 use crate::cpu::{CPU, Instruction};
 
-pub enum JumpAddressMode {
+pub(super) enum JumpAddressMode {
     Absolute(u16),
     Indirect(u16)
 }
 
 // http://www.obelisk.me.uk/6502/reference.html#JMP
-pub struct JMP {
+pub(super) struct JMP {
     mode: JumpAddressMode
 }
 

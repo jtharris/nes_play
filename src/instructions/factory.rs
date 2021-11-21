@@ -26,6 +26,8 @@ use crate::instructions::eor::EOR;
 use crate::instructions::inc::INC;
 use crate::instructions::inx::INX;
 use crate::instructions::iny::INY;
+use crate::instructions::jmp::{JMP, JumpAddressMode};
+use crate::instructions::jsr::JSR;
 use crate::instructions::lda::LDA;
 use crate::instructions::ldx::LDX;
 use crate::instructions::ldy::LDY;
@@ -53,12 +55,6 @@ use crate::instructions::tsx::TSX;
 use crate::instructions::txa::TXA;
 use crate::instructions::txs::TXS;
 use crate::instructions::tya::TYA;
-
-struct InstructionExecution {
-    pub cycles: u8,
-    pub page_boundary_cycle: bool,
-    pub instruction: Box<dyn Instruction>
-}
 
 struct Unknown {
     opcode: u8
@@ -203,8 +199,45 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0x0E => Box::new(ASL::new(Absolute(arg))),
         0x1E => Box::new(ASL::new(AbsoluteX(arg))),
         0x2C => Box::new(BIT::new(Absolute(arg))),
-
-        // TODO:  Lots more to go
+        0xCD => Box::new(CMP::new(Absolute(arg))),
+        0xDD => Box::new(CMP::new(AbsoluteX(arg))),
+        0xD9 => Box::new(CMP::new(AbsoluteY(arg))),
+        0xEC => Box::new(CPX::new(Absolute(arg))),
+        0xCC => Box::new(CPY::new(Absolute(arg))),
+        0xCE => Box::new(DEC::new(Absolute(arg))),
+        0xDE => Box::new(DEC::new(AbsoluteX(arg))),
+        0x4D => Box::new(EOR::new(Absolute(arg))),
+        0x5D => Box::new(EOR::new(AbsoluteX(arg))),
+        0x59 => Box::new(EOR::new(AbsoluteY(arg))),
+        0xEE => Box::new(INC::new(Absolute(arg))),
+        0xFE => Box::new(INC::new(AbsoluteX(arg))),
+        0x4C => Box::new(JMP::new(JumpAddressMode::Absolute(arg))),
+        0x6C => Box::new(JMP::new(JumpAddressMode::Indirect(arg))),
+        0x20 => Box::new(JSR::new(arg)),
+        0xAD => Box::new(LDA::new(Absolute(arg))),
+        0xBD => Box::new(LDA::new(AbsoluteX(arg))),
+        0xB9 => Box::new(LDA::new(AbsoluteY(arg))),
+        0xAE => Box::new(LDX::new(Absolute(arg))),
+        0xBE => Box::new(LDX::new(AbsoluteY(arg))),
+        0xAC => Box::new(LDY::new(Absolute(arg))),
+        0xBC => Box::new(LDY::new(AbsoluteX(arg))),
+        0x4E => Box::new(LSR::new(Absolute(arg))),
+        0x5E => Box::new(LSR::new(AbsoluteX(arg))),
+        0x0D => Box::new(ORA::new(Absolute(arg))),
+        0x1D => Box::new(ORA::new(AbsoluteX(arg))),
+        0x19 => Box::new(ORA::new(AbsoluteY(arg))),
+        0x2E => Box::new(ROL::new(Absolute(arg))),
+        0x3E => Box::new(ROL::new(AbsoluteX(arg))),
+        0x6E => Box::new(ROR::new(Absolute(arg))),
+        0x7E => Box::new(ROR::new(AbsoluteX(arg))),
+        0xED => Box::new(SBC::new(Absolute(arg))),
+        0xFD => Box::new(SBC::new(AbsoluteX(arg))),
+        0xF9 => Box::new(SBC::new(AbsoluteY(arg))),
+        0x8D => Box::new(STA::new(Absolute(arg))),
+        0x9D => Box::new(STA::new(AbsoluteX(arg))),
+        0x99 => Box::new(STA::new(AbsoluteY(arg))),
+        0x8E => Box::new(STX::new(Absolute(arg))),
+        0x8C => Box::new(STY::new(Absolute(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
