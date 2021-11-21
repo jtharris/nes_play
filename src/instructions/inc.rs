@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#INC
-pub struct INC {
+pub(super) struct INC {
     mode: AddressingMode
 }
 

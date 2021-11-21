@@ -1,7 +1,7 @@
 use crate::cpu::{AddressingMode, Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#STY
-struct STY {
+pub(super) struct STY {
     mode: AddressingMode
 }
 

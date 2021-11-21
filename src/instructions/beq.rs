@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#BEQ
-struct BEQ {
+pub(super) struct BEQ {
     relative: i8
 }
 

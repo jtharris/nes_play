@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#LDX
-pub struct LDX {
+pub(super) struct LDX {
     mode: AddressingMode
 }
 

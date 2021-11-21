@@ -1,7 +1,7 @@
 use crate::cpu::{CPU, Instruction, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#LDA
-pub struct LDA {
+pub(super) struct LDA {
     mode: AddressingMode
 }
 

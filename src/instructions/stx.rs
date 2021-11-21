@@ -1,7 +1,7 @@
 use crate::cpu::{AddressingMode, Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#STX
-struct STX {
+pub(super) struct STX {
     mode: AddressingMode
 }
 

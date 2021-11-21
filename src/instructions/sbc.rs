@@ -1,7 +1,7 @@
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SBC
-struct SBC {
+pub(super) struct SBC {
     mode: AddressingMode
 }
 

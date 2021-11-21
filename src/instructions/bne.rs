@@ -1,7 +1,7 @@
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#BNE
-struct BNE {
+pub(super) struct BNE {
     relative: i8
 }
 
