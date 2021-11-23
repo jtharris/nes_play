@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#BMI
@@ -8,6 +9,12 @@ pub(super) struct BMI {
 impl BMI {
     pub fn new(relative: i8) -> Self {
         BMI{ relative }
+    }
+}
+
+impl Display for BMI {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -30,7 +37,7 @@ mod test {
     #[test]
     fn no_effect() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0x0844;
         cpu.processor_status = 0x00;    // Negative flag is clear
 
@@ -45,7 +52,7 @@ mod test {
     #[test]
     fn jump_forward() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0x0844;
         cpu.processor_status = 0x81;
 
@@ -60,7 +67,7 @@ mod test {
     #[test]
     fn jump_back() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0xF844;
         cpu.processor_status = 0x80;
 

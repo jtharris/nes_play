@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ASL
@@ -8,6 +9,12 @@ pub(super) struct ASL {
 impl ASL {
     pub fn new(mode: AddressingMode) -> Self {
         ASL{ mode }
+    }
+}
+
+impl Display for ASL {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -34,7 +41,7 @@ mod test {
     #[test]
     fn basic_acc_asl() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0b00111010;
 
         // When
@@ -49,7 +56,7 @@ mod test {
     #[test]
     fn mem_asl_with_zero_and_carry() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xE6);
         cpu.write(&mode, 0b10000000);
 
@@ -66,7 +73,7 @@ mod test {
     #[test]
     fn mem_asl_with_negative() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xCC);
         cpu.write(&mode, 0b01001100);
 

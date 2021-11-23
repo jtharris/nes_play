@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#DEC
@@ -8,6 +9,12 @@ pub struct DEC {
 impl DEC {
     pub fn new(mode: AddressingMode) -> Self {
         DEC{ mode }
+    }
+}
+
+impl Display for DEC {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -32,7 +39,7 @@ mod test {
     #[test]
     fn basic_decrement() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xAA);
         cpu.write(&mode, 0x0C);
 
@@ -47,7 +54,7 @@ mod test {
     #[test]
     fn zero_result() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0x09);
         cpu.write(&mode, 0x01);
 
@@ -62,7 +69,7 @@ mod test {
     #[test]
     fn negative_result() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0x04);
         cpu.write(&mode, 0xFD);
 
@@ -77,7 +84,7 @@ mod test {
     #[test]
     fn negative_wrap() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0x04);
         cpu.write(&mode, 0x00);
 

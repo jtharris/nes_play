@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#STA
@@ -8,6 +9,12 @@ pub(super) struct STA {
 impl STA {
     pub fn new(mode: AddressingMode) -> Self {
         STA{ mode }
+    }
+}
+
+impl Display for STA {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -37,7 +44,7 @@ mod test {
     #[test]
     fn acc_is_stored() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xA7;
 
         // When

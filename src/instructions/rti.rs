@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#RTI
 pub(super) struct RTI {}
+
+impl Display for RTI {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for RTI {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -23,7 +30,7 @@ mod test {
     #[test]
     fn values_all_pulled() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.push_stack(0xA1);
         cpu.push_stack(0xC3);
         cpu.push_stack(0x03);       // S - carry and zero flags set

@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#PLA
 pub(super) struct PLA {}
+
+impl Display for PLA {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for PLA {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -23,7 +30,7 @@ mod test {
     #[test]
     fn acc_is_pulled() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.push_stack(0x8C);
 
         // When
@@ -37,7 +44,7 @@ mod test {
     #[test]
     fn acc_is_pulled_zero_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xFA;
         cpu.push_stack(0x00);
 

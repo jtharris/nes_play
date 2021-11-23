@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#PLP
 pub(super) struct PLP {}
+
+impl Display for PLP {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for PLP {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -20,7 +27,7 @@ mod test {
     #[test]
     fn s_is_pulled() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.push_stack(0xAF);
 
         // When

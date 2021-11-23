@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#INC
@@ -8,6 +9,12 @@ pub(super) struct INC {
 impl INC {
     pub fn new(mode: AddressingMode) -> Self {
         INC{ mode }
+    }
+}
+
+impl Display for INC {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -38,7 +45,7 @@ mod test {
     #[test]
     fn basic_increment() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xAA);
         cpu.write(&mode, 0x0C);
 
@@ -53,7 +60,7 @@ mod test {
     #[test]
     fn negative_result() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0x04);
         cpu.write(&mode, 0xFD);
 
@@ -68,7 +75,7 @@ mod test {
     #[test]
     fn zero_wrap() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0x04);
         cpu.write(&mode, 0xFF);
 

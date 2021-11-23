@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction};
 
 // http://www.obelisk.me.uk/6502/reference.html#JSR
@@ -8,6 +9,12 @@ pub(super) struct JSR {
 impl JSR {
     pub fn new(target: u16) -> Self {
         JSR{ target }
+    }
+}
+
+impl Display for JSR {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -32,7 +39,7 @@ mod test {
     #[test]
     fn jump_to_sub() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0xD8DC;
 
         // When

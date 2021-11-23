@@ -1,3 +1,5 @@
+use std::fmt;
+use std::fmt::{Formatter, write};
 use crate::bus::Bus;
 
 // http://wiki.nesdev.com/w/index.php/CPU_registers
@@ -12,7 +14,11 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new() -> Self {
+    pub fn empty() -> Self {
+        CPU::new(Vec::new())
+    }
+
+    pub fn new(program: Vec<u8>) -> Self {
         //http://wiki.nesdev.com/w/index.php/CPU_power_up_state
         CPU {
             program_counter: 0,
@@ -21,7 +27,7 @@ impl CPU {
             index_register_x: 0,
             index_register_y: 0,
             processor_status: 0,
-            bus: Bus::new()
+            bus: Bus::new(program)
         }
     }
 
@@ -197,12 +203,29 @@ pub enum AddressingMode {
     ZeroPageY(u8),
 }
 
+impl fmt::Display for AddressingMode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            AddressingMode::Accumulator => writeln!(f, "A"),
+            AddressingMode::Absolute(addr) => write!(f, "${:04X}", addr),
+            AddressingMode::AbsoluteX(addr) => write!(f, "${:04X},X", addr),
+            AddressingMode::AbsoluteY(addr) => write!(f, "${:04X},Y", addr),
+            AddressingMode::Immediate(val) => write!(f, "#${:02X}", val),
+            AddressingMode::IndirectX(addr) => write!(f, "(${:02X},X)", addr),
+            AddressingMode::IndirectY(addr) => write!(f, "(${:02X}),Y", addr),
+            AddressingMode::ZeroPage(addr) => write!(f, "${:02X}", addr),
+            AddressingMode::ZeroPageX(addr) => write!(f, "${:02X},X", addr),
+            AddressingMode::ZeroPageY(addr) => write!(f, "${:02X},Y", addr),
+        }
+    }
+}
+
 
 // Instructions are implemented as a visitor pattern, each being executable on
 // a given CPU reference
 // For instruction reference, see:  http://www.obelisk.me.uk/6502/reference.html
 // Return value is the number of machine cycles take to execute
-pub trait Instruction {
+pub trait Instruction: fmt::Display {
     fn execute(&self, cpu: &mut CPU) -> u8;
 }
 
@@ -215,7 +238,7 @@ mod test {
     #[test]
     fn read_write_16bit_memory() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.write_mem16(0x0800, 0xFF9B);
 
         // Then
@@ -225,7 +248,7 @@ mod test {
     #[test]
     fn accumulator_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x8C;
 
         // Then
@@ -235,7 +258,7 @@ mod test {
     #[test]
     fn accumulator_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         cpu.write(&Accumulator, 0x07);
@@ -247,7 +270,7 @@ mod test {
     #[test]
     fn absolute_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x03EA, 0x8A);
 
         // Then
@@ -257,7 +280,7 @@ mod test {
     #[test]
     fn absolute_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         cpu.write(&Absolute(0x02E6), 0x07);
@@ -269,7 +292,7 @@ mod test {
     #[test]
     fn absolute_x_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_x = 0x0A;
 
@@ -280,7 +303,7 @@ mod test {
     #[test]
     fn absolute_x_no_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x0104, 0x29);
         cpu.index_register_x = 0x05;
 
@@ -291,7 +314,7 @@ mod test {
     #[test]
     fn absolute_x_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x0003, 0x29);
         cpu.index_register_x = 0x05;
 
@@ -302,7 +325,7 @@ mod test {
     #[test]
     fn absolute_x_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x0A;
 
         // WHen
@@ -315,7 +338,7 @@ mod test {
     #[test]
     fn absolute_x_no_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x07;
 
         // When
@@ -328,7 +351,7 @@ mod test {
     #[test]
     fn absolute_x_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x07;
 
         // When
@@ -341,7 +364,7 @@ mod test {
     #[test]
     fn absolute_y_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_y = 0x0A;
 
@@ -352,7 +375,7 @@ mod test {
     #[test]
     fn absolute_y_no_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x0104, 0x29);
         cpu.index_register_y = 0x05;
 
@@ -363,7 +386,7 @@ mod test {
     #[test]
     fn absolute_y_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x0003, 0x29);
         cpu.index_register_y = 0x05;
 
@@ -374,7 +397,7 @@ mod test {
     #[test]
     fn absolute_y_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x0A;
 
         // When
@@ -387,7 +410,7 @@ mod test {
     #[test]
     fn absolute_y_no_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x07;
 
         // When
@@ -400,7 +423,7 @@ mod test {
     #[test]
     fn absolute_y_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x07;
 
         // When
@@ -413,7 +436,7 @@ mod test {
     #[test]
     fn immediate_read() {
         // Given
-        let cpu = CPU::new();
+        let cpu = CPU::empty();
 
         // Then
         assert_eq!(0xEA, cpu.read(&Immediate(0xEA)));
@@ -423,7 +446,7 @@ mod test {
     fn indirect_x_read() {
         // Example from Indexed indirect here:  https://skilldrick.github.io/easy6502/#addressing
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x01;
         cpu.bus.write_mem8(0x01, 0x05);
         cpu.bus.write_mem8(0x02, 0x07);
@@ -437,7 +460,7 @@ mod test {
     fn indirect_x_write() {
         // Example derived from:  https://skilldrick.github.io/easy6502/#addressing
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x01;
         cpu.bus.write_mem8(0x01, 0x05);
         cpu.bus.write_mem8(0x02, 0x07);
@@ -454,7 +477,7 @@ mod test {
     fn indirect_y_read() {
         // Example from Indexed indirect here:  https://skilldrick.github.io/easy6502/#addressing
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         cpu.index_register_y = 0x01;
         cpu.bus.write_mem8(0x01, 0x03);
@@ -469,7 +492,7 @@ mod test {
     fn indirect_y_write() {
         // Adapted from the indirect_y_read
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         cpu.index_register_y = 0x01;
         cpu.bus.write_mem8(0x01, 0x03);
@@ -485,7 +508,7 @@ mod test {
     #[test]
     fn zero_page_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0xA8, 0x0C);
 
         // Then
@@ -495,7 +518,7 @@ mod test {
     #[test]
     fn zero_page_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         cpu.write(&ZeroPage(0xA8), 0xF1);
@@ -507,7 +530,7 @@ mod test {
     #[test]
     fn zero_page_x_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_x = 0x0A;
 
@@ -518,7 +541,7 @@ mod test {
     #[test]
     fn zero_page_x_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x04, 0x29);
         cpu.index_register_x = 0x05;
 
@@ -529,7 +552,7 @@ mod test {
     #[test]
     fn zero_page_x_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x0A;
 
         // When
@@ -542,7 +565,7 @@ mod test {
     #[test]
     fn zero_page_x_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x07;
 
         // When
@@ -555,7 +578,7 @@ mod test {
     #[test]
     fn zero_page_y_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x8D, 0x09);
         cpu.index_register_y = 0x0A;
 
@@ -566,7 +589,7 @@ mod test {
     #[test]
     fn zero_page_y_wrap_around_read() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.bus.write_mem8(0x04, 0x29);
         cpu.index_register_y = 0x05;
 
@@ -577,7 +600,7 @@ mod test {
     #[test]
     fn zero_page_y_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x0A;
 
         // When
@@ -590,7 +613,7 @@ mod test {
     #[test]
     fn zero_page_y_wrap_around_write() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x07;
 
         // When
@@ -603,7 +626,7 @@ mod test {
     #[test]
     fn push_values_to_stack() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         cpu.push_stack(0x83);
@@ -620,7 +643,7 @@ mod test {
     #[test]
     fn push_and_pop_stack() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         cpu.push_stack(0x83);

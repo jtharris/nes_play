@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ROR
@@ -8,6 +9,12 @@ pub(super) struct ROR {
 impl ROR {
     pub fn new(mode: AddressingMode) -> Self {
         ROR{ mode }
+    }
+}
+
+impl Display for ROR {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -41,7 +48,7 @@ mod test {
     #[test]
     fn rotate_acc_carry_0_to_1() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xC5;
 
         // When
@@ -55,7 +62,7 @@ mod test {
     #[test]
     fn rotate_acc_carry_1_to_0() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x10;
         cpu.set_flag(Carry, true);
 
@@ -70,7 +77,7 @@ mod test {
     #[test]
     fn rotate_mem_with_zero() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xC5;
         cpu.write(&ZeroPage(0x8C), 0x01);
 

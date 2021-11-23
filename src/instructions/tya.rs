@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TYA
 pub(super) struct TYA {}
+
+impl Display for TYA {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for TYA {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -22,7 +29,7 @@ mod test {
     #[test]
     fn copies_to_acc_no_flags() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x7E;
 
         // When
@@ -36,7 +43,7 @@ mod test {
     #[test]
     fn copies_to_acc_zero_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x00;
         cpu.accumulator = 0xAF;
 
@@ -51,7 +58,7 @@ mod test {
     #[test]
     fn copies_to_acc_negative_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0xFC;
         cpu.accumulator = 0xAF;
 

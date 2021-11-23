@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction};
 
 pub(super) enum JumpAddressMode {
@@ -13,6 +14,12 @@ pub(super) struct JMP {
 impl JMP {
     pub fn new(mode: JumpAddressMode) -> Self {
         JMP{ mode }
+    }
+}
+
+impl Display for JMP {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -38,7 +45,7 @@ mod test {
     #[test]
     fn absolute_jump() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         // When
         JMP::new(Absolute(0xA281)).execute(&mut cpu);
@@ -50,7 +57,7 @@ mod test {
     #[test]
     fn indirect_jump() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.write_mem16(0x0183, 0x118C);
 
         // When

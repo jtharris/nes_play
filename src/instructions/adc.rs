@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ADC
@@ -8,6 +9,12 @@ pub(super) struct ADC {
 impl ADC {
     pub fn new(mode: AddressingMode) -> Self {
         ADC{ mode }
+    }
+}
+
+impl Display for ADC {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ADC {}", self.mode)
     }
 }
 
@@ -35,13 +42,13 @@ impl Instruction for ADC {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction, StatusFlag};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, AbsoluteX, Absolute};
     use crate::instructions::adc::ADC;
 
     #[test]
     fn basic_addition() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA1);
 
         cpu.accumulator = 0x0A;
@@ -59,7 +66,7 @@ mod test {
     #[test]
     fn addition_with_carry_and_overflow() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA1);
 
         cpu.accumulator = 0xF3;         // -115, 243
@@ -78,7 +85,7 @@ mod test {
     #[test]
     fn addition_using_carry() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA1);
 
         cpu.accumulator = 0x03;
@@ -97,7 +104,7 @@ mod test {
     #[test]
     fn addition_with_overflow_and_negative() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         cpu.accumulator = 0xFF;
         let mode = Immediate(0x89);
@@ -114,7 +121,7 @@ mod test {
     #[test]
     fn addition_with_overflow_zero_and_carry() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
 
         cpu.accumulator = 0xFF;
         let mode = Immediate(0x01);
@@ -126,6 +133,15 @@ mod test {
         // Then
         assert_eq!(0x00, cpu.accumulator);
         assert_eq!(0b01000011, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        // Given
+        let adc = ADC::new(AbsoluteX(0x003A));
+
+        // Then
+        assert_eq!("ADC $003A,X", adc.to_string());
     }
 
 }

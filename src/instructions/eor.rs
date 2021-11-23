@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#EOR
@@ -8,6 +9,12 @@ pub(super) struct EOR {
 impl EOR {
     pub fn new(mode: AddressingMode) -> Self {
         EOR{ mode }
+    }
+}
+
+impl Display for EOR {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -32,7 +39,7 @@ mod test {
     #[test]
     fn basic_eor() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xD3);
 
         cpu.accumulator =      0b01101110;
@@ -49,7 +56,7 @@ mod test {
     #[test]
     fn zero_flag_eor() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = Immediate(0b01101110);
 
         cpu.accumulator = 0b01101110;
@@ -65,7 +72,7 @@ mod test {
     #[test]
     fn negative_flag_eor() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = Immediate(0b01011111);
 
         cpu.accumulator = 0b11011110;

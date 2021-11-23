@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#INX
 pub(super) struct INX {}
+
+impl Display for INX {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for INX {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -23,7 +30,7 @@ mod test {
     #[test]
     fn basic_increment() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x0C;
 
         // When
@@ -37,7 +44,7 @@ mod test {
     #[test]
     fn negative_result() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0xFD;
 
         // When
@@ -51,7 +58,7 @@ mod test {
     #[test]
     fn zero_wrap() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0xFF;
 
         // When

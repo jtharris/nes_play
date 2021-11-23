@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#BIT
@@ -8,6 +9,12 @@ pub(super) struct BIT {
 impl BIT {
     pub fn new(mode: AddressingMode) -> Self {
         BIT{ mode }
+    }
+}
+
+impl Display for BIT {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -31,7 +38,7 @@ mod test {
     #[test]
     fn clear_top_bits() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA8);
         cpu.write(&mode, 0xF0);
         cpu.accumulator = 0x0F;
@@ -47,7 +54,7 @@ mod test {
     #[test]
     fn set_top_bits() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA8);
         cpu.write(&mode, 0xF0);
         cpu.accumulator = 0xEF;

@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::AddressingMode::{Accumulator, Immediate, ZeroPage, ZeroPageX, IndirectX, IndirectY, Absolute, AbsoluteX, AbsoluteY, ZeroPageY};
 use crate::cpu::{CPU, Instruction};
 use crate::instructions::adc::ADC;
@@ -66,11 +67,23 @@ impl Unknown {
     }
 }
 
+impl Display for Unknown {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "Unknown opcode:  ${:X}", self.opcode)
+    }
+}
+
 impl Instruction for Unknown {
     fn execute(&self, _: &mut CPU) -> u8 {
         panic!("Unknown opcode encountered!  {}", self.opcode);
     }
 }
+
+//pub fn generate_instruction(cpu: &mut CPU) -> Box<dyn Instruction> {
+    //let opcode = program[cpu.program_counter as usize];
+
+
+//}
 
 fn generate_1byte_instruction(opcode: u8) -> Box<dyn Instruction> {
     match opcode {
@@ -187,7 +200,6 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
     }
 }
 
-// TODO:  3 byte instructions
 fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
     match opcode {
         0x6D => Box::new(ADC::new(Absolute(arg))),

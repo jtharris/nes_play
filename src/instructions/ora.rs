@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ORA
@@ -8,6 +9,12 @@ pub(super) struct ORA {
 impl ORA {
     pub fn new(mode: AddressingMode) -> Self {
         ORA{ mode }
+    }
+}
+
+impl Display for ORA {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -32,7 +39,7 @@ mod test {
     #[test]
     fn basic_or() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = ZeroPage(0xD3);
 
         cpu.accumulator = 0b01101110;
@@ -49,7 +56,7 @@ mod test {
     #[test]
     fn zero_flag_or() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = Immediate(0x00);
 
         cpu.accumulator = 0x00;
@@ -65,7 +72,7 @@ mod test {
     #[test]
     fn negative_flag_or() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         let mode = Immediate(0x01);
 
         cpu.accumulator = 0b11011110;

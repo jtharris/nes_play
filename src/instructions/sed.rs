@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SED
 pub(super) struct SED {}
+
+impl Display for SED {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for SED {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -19,7 +26,7 @@ mod test {
     #[test]
     fn confirm_decimal_set() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.processor_status = 0x00;
 
         // When
@@ -32,7 +39,7 @@ mod test {
     #[test]
     fn existing_decimal_set() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.processor_status = 0x09;   // decimal and carry
 
         // When

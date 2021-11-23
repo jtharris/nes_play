@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TAY
 pub(super) struct TAY {}
+
+impl Display for TAY {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for TAY {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -22,7 +29,7 @@ mod test {
     #[test]
     fn copies_to_y_no_flags() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x7E;
 
         // When
@@ -36,7 +43,7 @@ mod test {
     #[test]
     fn copies_to_y_zero_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x00;
         cpu.index_register_y = 0xAF;
 
@@ -51,7 +58,7 @@ mod test {
     #[test]
     fn copies_to_y_negative_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xFC;
         cpu.index_register_y = 0xAF;
 

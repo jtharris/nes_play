@@ -1,7 +1,14 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#TSX
 pub(super) struct TSX {}
+
+impl Display for TSX {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl Instruction for TSX {
     fn execute(&self, cpu: &mut CPU) -> u8 {
@@ -22,7 +29,7 @@ mod test {
     #[test]
     fn copies_to_x_no_flags() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.stack_pointer = 0x7E;
 
         // When
@@ -36,7 +43,7 @@ mod test {
     #[test]
     fn copies_to_x_zero_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.stack_pointer = 0x00;
         cpu.index_register_x = 0xAF;
 
@@ -51,7 +58,7 @@ mod test {
     #[test]
     fn copies_to_x_negative_flag() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.stack_pointer = 0xFC;
         cpu.index_register_x = 0xAF;
 

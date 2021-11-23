@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, StatusFlag, AddressingMode};
 
 // http://www.obelisk.me.uk/6502/reference.html#CPY
@@ -8,6 +9,12 @@ pub struct CPY {
 impl CPY {
     pub fn new(mode: AddressingMode) -> Self {
         CPY{ mode }
+    }
+}
+
+impl Display for CPY {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -31,7 +38,7 @@ mod test {
     #[test]
     fn values_are_equal_positive() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0x3B;
 
         // When
@@ -44,7 +51,7 @@ mod test {
     #[test]
     fn acc_greater_and_negative() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_y = 0xAB;
 
         // When
@@ -57,7 +64,7 @@ mod test {
     #[test]
     fn acc_less_and_positive() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0x02;
 
         // When

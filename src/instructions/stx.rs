@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{AddressingMode, Instruction, CPU};
 
 // http://www.obelisk.me.uk/6502/reference.html#STX
@@ -8,6 +9,12 @@ pub(super) struct STX {
 impl STX {
     pub fn new(mode: AddressingMode) -> Self {
         STX{ mode }
+    }
+}
+
+impl Display for STX {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -28,7 +35,7 @@ mod test {
     #[test]
     fn x_is_stored() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.index_register_x = 0xA7;
 
         // When

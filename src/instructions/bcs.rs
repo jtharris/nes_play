@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#BCS
@@ -8,6 +9,12 @@ pub(super) struct BCS {
 impl BCS {
     pub fn new(relative: i8) -> Self {
         BCS{ relative }
+    }
+}
+
+impl Display for BCS {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -30,7 +37,7 @@ mod test {
     #[test]
     fn no_effect() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0x0844;
         cpu.processor_status = 0x02;    // Carry is clear
 
@@ -45,7 +52,7 @@ mod test {
     #[test]
     fn jump_forward() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0x0844;
         cpu.processor_status = 0x01;
 
@@ -60,7 +67,7 @@ mod test {
     #[test]
     fn jump_back() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.program_counter = 0xF844;
         cpu.processor_status = 0x01;
 

@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#LSR
@@ -8,6 +9,12 @@ pub(super) struct LSR {
 impl LSR {
     pub fn new(mode: AddressingMode) -> Self {
         LSR{ mode }
+    }
+}
+
+impl Display for LSR {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -36,7 +43,7 @@ mod test {
     #[test]
     fn shift_with_no_flags_acc() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0b00001010;
 
         // When
@@ -50,7 +57,7 @@ mod test {
     #[test]
     fn shift_with_zero_and_carry_set() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.write(&ZeroPage(0x88), 0x01);
 
         // When
@@ -64,7 +71,7 @@ mod test {
     #[test]
     fn negative_flag_always_cleared() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0xFF;
         cpu.processor_status = 0x80;
 

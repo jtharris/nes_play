@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction, AddressingMode, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#LDA
@@ -8,6 +9,12 @@ pub(super) struct LDA {
 impl LDA {
     pub fn new(mode: AddressingMode) -> Self {
         LDA{ mode }
+    }
+}
+
+impl Display for LDA {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
     }
 }
 
@@ -31,7 +38,7 @@ mod test {
     #[test]
     fn accumulator_is_loaded_neg() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.write(&ZeroPage(0x88), 0xF1);
 
         // When
@@ -45,7 +52,7 @@ mod test {
     #[test]
     fn accumulator_is_loaded_zero() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x89;
 
         // When
@@ -59,7 +66,7 @@ mod test {
     #[test]
     fn accumulator_is_loaded_no_flags() {
         // Given
-        let mut cpu = CPU::new();
+        let mut cpu = CPU::empty();
         cpu.accumulator = 0x89;
 
         // When

@@ -14,12 +14,16 @@ fn ppu_register_address(addr: u16) -> usize {
 }
 
 pub struct Bus {
-    cpu_vram: [u8; 2048]
+    cpu_vram: [u8; 2048],
+    prg_rom: Vec<u8>
 }
 
 impl Bus {
-    pub fn new() -> Self {
-       Bus { cpu_vram: [0; 2048] }
+    pub fn new(program: Vec<u8>) -> Self {
+       Bus {
+           cpu_vram: [0; 2048],
+           prg_rom: program
+       }
     }
 
     pub fn read_mem8(&self, addr: u16) -> u8 {
@@ -64,7 +68,7 @@ mod test {
     #[test]
     fn read_write_8bit_ram() {
         // Given
-        let mut bus = Bus::new();
+        let mut bus = Bus::new(Vec::new());
         bus.write_mem8(0x0300, 0x1A);
 
         // Then
@@ -74,7 +78,7 @@ mod test {
     #[test]
     fn read_write_16bit_ram() {
         // Given
-        let mut bus = Bus::new();
+        let mut bus = Bus::new(Vec::new());
         bus.write_mem16(0x0300, 0xFFE9);
 
         // Then
@@ -84,7 +88,7 @@ mod test {
     #[test]
     fn read_16bit_ram_little_endian() {
         // Given
-        let mut bus = Bus::new();
+        let mut bus = Bus::new(Vec::new());
         bus.write_mem8(0x08A0, 0x10);
         bus.write_mem8(0x08A1, 0x28);
 
@@ -95,7 +99,7 @@ mod test {
     #[test]
     fn write_16bit_ram_little_endian() {
         // Given
-        let mut bus = Bus::new();
+        let mut bus = Bus::new(Vec::new());
 
         // When
         bus.write_mem16(0x004A, 0xD82A);
