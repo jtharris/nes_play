@@ -14,7 +14,7 @@ impl BCS {
 
 impl Display for BCS {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BCS ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x01);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bcs = BCS::new(0x2A);
+
+        // Then
+        assert_eq!("BCS $2A", bcs.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bcs = BCS::new(-0x13);
+
+        // Then
+        assert_eq!("BCS $ED", bcs.to_string())
     }
 }

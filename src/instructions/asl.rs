@@ -14,7 +14,7 @@ impl ASL {
 
 impl Display for ASL {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "ASL {}", self.mode)
     }
 }
 
@@ -85,5 +85,14 @@ mod test {
         let mode = ZeroPage(0xCC);
         assert_eq!(0b10011000, cpu.read(&mode));
         assert_eq!(0b10000000, cpu.processor_status);  // negative set
+    }
+
+    #[test]
+    fn string_representation() {
+        // Given
+        let asl = ASL::new(Accumulator);
+
+        // Then
+        assert_eq!("ASL A", asl.to_string())
     }
 }

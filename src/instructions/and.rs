@@ -14,7 +14,7 @@ impl AND {
 
 impl Display for AND {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "AND {}", self.mode)
     }
 }
 
@@ -82,5 +82,14 @@ mod test {
         // Then
         assert_eq!(cpu.accumulator, 0b11010000);
         assert_eq!(cpu.processor_status, 0b10000000);  // Negative flag is set
+    }
+
+    #[test]
+    fn string_representation() {
+        // Given
+        let and = AND::new(Immediate(0x8C));
+
+        // Then
+        assert_eq!("AND #$8C", and.to_string())
     }
 }

@@ -14,7 +14,7 @@ impl BEQ {
 
 impl Display for BEQ {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BEQ ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x02);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let beq = BEQ::new(0x30);
+
+        // Then
+        assert_eq!("BEQ $30", beq.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let beq = BEQ::new(-0x01);
+
+        // Then
+        assert_eq!("BEQ $FF", beq.to_string())
     }
 }

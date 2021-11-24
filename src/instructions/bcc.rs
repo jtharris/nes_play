@@ -14,7 +14,7 @@ impl BCC {
 
 impl Display for BCC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BCC ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x00);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bcc = BCC::new(0x0A);
+
+        // Then
+        assert_eq!("BCC $0A", bcc.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bcc = BCC::new(-0x03);
+
+        // Then
+        assert_eq!("BCC $FD", bcc.to_string())
     }
 }

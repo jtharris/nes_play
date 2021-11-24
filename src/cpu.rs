@@ -206,7 +206,7 @@ pub enum AddressingMode {
 impl fmt::Display for AddressingMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            AddressingMode::Accumulator => writeln!(f, "A"),
+            AddressingMode::Accumulator => write!(f, "A"),
             AddressingMode::Absolute(addr) => write!(f, "${:04X}", addr),
             AddressingMode::AbsoluteX(addr) => write!(f, "${:04X},X", addr),
             AddressingMode::AbsoluteY(addr) => write!(f, "${:04X},Y", addr),
