@@ -14,7 +14,7 @@ impl ROR {
 
 impl Display for ROR {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "ROR {}", self.mode)
     }
 }
 
@@ -42,7 +42,7 @@ impl Instruction for ROR {
 mod test {
     use crate::cpu::{CPU, Instruction};
     use super::ROR;
-    use crate::cpu::AddressingMode::{Accumulator, ZeroPage};
+    use crate::cpu::AddressingMode::{AbsoluteX, Accumulator, ZeroPage};
     use crate::cpu::StatusFlag::Carry;
 
     #[test]
@@ -87,5 +87,12 @@ mod test {
         // Then
         assert_eq!(0x00, cpu.read(&ZeroPage(0x8C)));
         assert_eq!(0x03, cpu.processor_status);  // carry is set because low bit was 1, also zero
+    }
+
+    #[test]
+    fn string_representation() {
+        let ror = ROR::new(AbsoluteX(0x05F0));
+
+        assert_eq!("ROR $05F0,X", ror.to_string())
     }
 }

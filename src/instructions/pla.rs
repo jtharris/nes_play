@@ -6,7 +6,7 @@ pub(super) struct PLA {}
 
 impl Display for PLA {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "PLA")
     }
 }
 

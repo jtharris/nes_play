@@ -6,7 +6,7 @@ pub(super) struct SED {}
 
 impl Display for SED {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "SED")
     }
 }
 

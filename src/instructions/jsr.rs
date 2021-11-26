@@ -14,7 +14,7 @@ impl JSR {
 
 impl Display for JSR {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "JSR ${:04X}", self.target)
     }
 }
 
@@ -49,5 +49,12 @@ mod test {
         assert_eq!(0x02F0, cpu.program_counter);
         assert_eq!(0xD8, cpu.read(&Absolute(0x01FD)));
         assert_eq!(0xDB, cpu.read(&Absolute(0x01FC)));  // Once loaded, PC will inc
+    }
+
+    #[test]
+    fn string_representation() {
+        let jsr = JSR::new(0x5597);
+
+        assert_eq!("JSR $5597", jsr.to_string())
     }
 }

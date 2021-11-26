@@ -6,7 +6,7 @@ pub struct CLI {}
 
 impl Display for CLI {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CLI")
     }
 }
 

@@ -14,7 +14,7 @@ impl BVS {
 
 impl Display for BVS {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BVS ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0xC2);
+    }
+
+    #[test]
+    fn string_representation_zero() {
+        // Given
+        let bvs = BVS::new(0x00);
+
+        // Then
+        assert_eq!("BVS $00", bvs.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bvs = BVS::new(-0x2A);
+
+        // Then
+        assert_eq!("BVS $D6", bvs.to_string())
     }
 }

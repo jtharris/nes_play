@@ -6,7 +6,7 @@ pub struct NOP {}
 
 impl Display for NOP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "NOP")
     }
 }
 

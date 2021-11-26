@@ -14,7 +14,7 @@ impl BVC {
 
 impl Display for BVC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BVC ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x02);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bvc = BVC::new(0x10);
+
+        // Then
+        assert_eq!("BVC $10", bvc.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bvc = BVC::new(-0x0A);
+
+        // Then
+        assert_eq!("BVC $F6", bvc.to_string())
     }
 }

@@ -6,7 +6,7 @@ pub(super) struct DEY {}
 
 impl Display for DEY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "DEY")
     }
 }
 

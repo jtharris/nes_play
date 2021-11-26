@@ -14,7 +14,7 @@ impl SBC {
 
 impl Display for SBC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "SBC {}", self.mode)
     }
 }
 
@@ -45,7 +45,7 @@ impl Instruction for SBC {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction, StatusFlag};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX};
     use super::SBC;
 
     #[test]
@@ -133,6 +133,13 @@ mod test {
         // Then
         assert_eq!(0x60, cpu.accumulator);
         assert_eq!(0b00000000, cpu.processor_status);  // no overflow, carry, or negative
+    }
+
+    #[test]
+    fn string_representation() {
+        let sbc = SBC::new(IndirectX(0x6B));
+
+        assert_eq!("SBC ($6B,X)", sbc.to_string())
     }
 
 }

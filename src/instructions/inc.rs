@@ -14,7 +14,7 @@ impl INC {
 
 impl Display for INC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "INC {}", self.mode)
     }
 }
 
@@ -39,7 +39,7 @@ impl Instruction for INC {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::ZeroPage;
+    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageX};
     use crate::instructions::inc::INC;
 
     #[test]
@@ -85,5 +85,12 @@ mod test {
         // Then
         assert_eq!(0x00, cpu.read(&ZeroPage(0x04)));
         assert_eq!(0x02, cpu.processor_status);    // Zero flag is set
+    }
+
+    #[test]
+    fn string_representation() {
+        let inc = INC::new(ZeroPageX(0x81));
+
+        assert_eq!("INC $81,X", inc.to_string())
     }
 }

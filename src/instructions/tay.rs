@@ -6,7 +6,7 @@ pub(super) struct TAY {}
 
 impl Display for TAY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "TAY")
     }
 }
 

@@ -6,7 +6,7 @@ pub(super) struct INY {}
 
 impl Display for INY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "INY")
     }
 }
 

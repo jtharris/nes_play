@@ -14,7 +14,7 @@ impl LDY {
 
 impl Display for LDY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "LDY {}", self.mode)
     }
 }
 
@@ -32,7 +32,7 @@ impl Instruction for LDY {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, ZeroPageX};
     use super::LDY;
 
     #[test]
@@ -75,5 +75,12 @@ mod test {
         // Then
         assert_eq!(0x6A, cpu.index_register_y);
         assert_eq!(0x00, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let ldy = LDY::new(ZeroPageX(0xD2));
+
+        assert_eq!("LDY $D2,X", ldy.to_string())
     }
 }

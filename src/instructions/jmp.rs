@@ -6,6 +6,15 @@ pub(super) enum JumpAddressMode {
     Indirect(u16)
 }
 
+impl Display for JumpAddressMode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            JumpAddressMode::Absolute(addr) => write!(f, "${:04X}", addr),
+            JumpAddressMode::Indirect(addr) => write!(f, "(${:04X})", addr),
+        }
+    }
+}
+
 // http://www.obelisk.me.uk/6502/reference.html#JMP
 pub(super) struct JMP {
     mode: JumpAddressMode
@@ -19,7 +28,7 @@ impl JMP {
 
 impl Display for JMP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "JMP {}", self.mode)
     }
 }
 
@@ -65,5 +74,19 @@ mod test {
 
         // Then
         assert_eq!(0x118C, cpu.program_counter);
+    }
+
+    #[test]
+    fn string_representation_absolute() {
+        let jmp = JMP::new(Absolute(0x5597));
+
+        assert_eq!("JMP $5597", jmp.to_string())
+    }
+
+    #[test]
+    fn string_representation_indirect() {
+        let jmp = JMP::new(Indirect(0x5597));
+
+        assert_eq!("JMP ($5597)", jmp.to_string())
     }
 }

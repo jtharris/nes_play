@@ -14,7 +14,7 @@ impl BMI {
 
 impl Display for BMI {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BMI ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x80);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bmi = BMI::new(0x3A);
+
+        // Then
+        assert_eq!("BMI $3A", bmi.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bmi = BMI::new(-0x0A);
+
+        // Then
+        assert_eq!("BMI $F6", bmi.to_string())
     }
 }

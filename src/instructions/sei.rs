@@ -6,7 +6,7 @@ pub(super) struct SEI {}
 
 impl Display for SEI {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "SEI")
     }
 }
 

@@ -14,7 +14,7 @@ impl CMP {
 
 impl Display for CMP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CMP {}", self.mode)
     }
 }
 
@@ -33,6 +33,7 @@ impl Instruction for CMP {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, AddressingMode::AbsoluteX, AddressingMode::Immediate, Instruction};
+    use crate::cpu::AddressingMode::Absolute;
     use super::CMP;
 
     #[test]
@@ -74,5 +75,12 @@ mod test {
 
         // Then
         assert_eq!(0, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let cmp = CMP::new(Absolute(0x0A1E));
+
+        assert_eq!("CMP $0A1E", cmp.to_string())
     }
 }

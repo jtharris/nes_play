@@ -14,7 +14,7 @@ impl LDX {
 
 impl Display for LDX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "LDX {}", self.mode)
     }
 }
 
@@ -32,7 +32,7 @@ impl Instruction for LDX {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, AbsoluteY};
     use super::LDX;
 
     #[test]
@@ -75,5 +75,12 @@ mod test {
         // Then
         assert_eq!(0x6A, cpu.index_register_x);
         assert_eq!(0x00, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let ldx = LDX::new(AbsoluteY(0x4400));
+
+        assert_eq!("LDX $4400,Y", ldx.to_string())
     }
 }

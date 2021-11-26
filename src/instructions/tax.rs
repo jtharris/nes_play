@@ -6,7 +6,7 @@ pub(super) struct TAX {}
 
 impl Display for TAX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "TAX")
     }
 }
 

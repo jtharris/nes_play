@@ -6,7 +6,7 @@ pub(super) struct PHP {}
 
 impl Display for PHP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "PHP")
     }
 }
 

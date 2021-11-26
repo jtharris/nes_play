@@ -6,7 +6,7 @@ pub(super) struct TYA {}
 
 impl Display for TYA {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "TYA")
     }
 }
 

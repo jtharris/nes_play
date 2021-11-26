@@ -6,7 +6,7 @@ pub(super) struct CLV {}
 
 impl Display for CLV {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CLV")
     }
 }
 

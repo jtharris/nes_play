@@ -6,7 +6,7 @@ pub(super) struct TXS {}
 
 impl Display for TXS {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "TXS")
     }
 }
 

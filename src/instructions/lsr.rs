@@ -14,7 +14,7 @@ impl LSR {
 
 impl Display for LSR {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "LSR {}", self.mode)
     }
 }
 
@@ -38,7 +38,7 @@ impl Instruction for LSR {
 mod test {
     use crate::cpu::{CPU, Instruction};
     use crate::instructions::lsr::LSR;
-    use crate::cpu::AddressingMode::{Accumulator, ZeroPage};
+    use crate::cpu::AddressingMode::{Absolute, Accumulator, ZeroPage};
 
     #[test]
     fn shift_with_no_flags_acc() {
@@ -81,5 +81,12 @@ mod test {
         // Then
         assert_eq!(0x7F, cpu.accumulator);
         assert_eq!(0x01, cpu.processor_status);   // Carry is set and negative is cleared
+    }
+
+    #[test]
+    fn string_representation() {
+        let lsr = LSR::new(Absolute(0x0A44));
+
+        assert_eq!("LSR $0A44", lsr.to_string())
     }
 }

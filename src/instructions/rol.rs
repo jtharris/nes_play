@@ -14,7 +14,7 @@ impl ROL {
 
 impl Display for ROL {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "ROL {}", self.mode)
     }
 }
 
@@ -87,5 +87,12 @@ mod test {
         // Then
         assert_eq!(0x00, cpu.read(&ZeroPage(0x8C)));
         assert_eq!(0x03, cpu.processor_status);  // carry is set because high bit was 1, also zero
+    }
+
+    #[test]
+    fn string_representation() {
+        let rol = ROL::new(Accumulator);
+
+        assert_eq!("ROL A", rol.to_string())
     }
 }

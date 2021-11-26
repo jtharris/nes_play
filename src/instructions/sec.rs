@@ -6,7 +6,7 @@ pub(super) struct SEC {}
 
 impl Display for SEC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "SEC")
     }
 }
 

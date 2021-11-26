@@ -14,7 +14,7 @@ impl BNE {
 
 impl Display for BNE {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BNE ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x00);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bne = BNE::new(0x1C);
+
+        // Then
+        assert_eq!("BNE $1C", bne.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bne = BNE::new(-0x11);
+
+        // Then
+        assert_eq!("BNE $EF", bne.to_string())
     }
 }

@@ -14,7 +14,7 @@ impl CPX {
 
 impl Display for CPX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CPX {}", self.mode)
     }
 }
 
@@ -74,5 +74,12 @@ mod test {
 
         // Then
         assert_eq!(0, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let cpx = CPX::new(ZeroPage(0xC0));
+
+        assert_eq!("CPX $C0", cpx.to_string())
     }
 }

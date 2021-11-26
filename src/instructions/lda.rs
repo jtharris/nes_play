@@ -14,7 +14,7 @@ impl LDA {
 
 impl Display for LDA {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "LDA {}", self.mode)
     }
 }
 
@@ -32,7 +32,7 @@ impl Instruction for LDA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX};
     use super::LDA;
 
     #[test]
@@ -75,5 +75,12 @@ mod test {
         // Then
         assert_eq!(0x6A, cpu.accumulator);
         assert_eq!(0x00, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let lda = LDA::new(IndirectX(0x4D));
+
+        assert_eq!("LDA ($4D,X)", lda.to_string())
     }
 }

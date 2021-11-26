@@ -6,7 +6,7 @@ pub(super) struct PLP {}
 
 impl Display for PLP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "PLP")
     }
 }
 

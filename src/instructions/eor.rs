@@ -14,7 +14,7 @@ impl EOR {
 
 impl Display for EOR {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "EOR {}", self.mode)
     }
 }
 
@@ -33,7 +33,7 @@ impl Instruction for EOR {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, AbsoluteY};
     use crate::instructions::eor::EOR;
 
     #[test]
@@ -83,5 +83,12 @@ mod test {
         // Then
         assert_eq!(cpu.accumulator, 0b10000001);
         assert_eq!(cpu.processor_status, 0b10000000);  // Negative flag is set
+    }
+
+    #[test]
+    fn string_representation() {
+        let eor = EOR::new(AbsoluteY(0x02AA));
+
+        assert_eq!("EOR $02AA,Y", eor.to_string())
     }
 }

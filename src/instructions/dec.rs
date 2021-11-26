@@ -14,7 +14,7 @@ impl DEC {
 
 impl Display for DEC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "DEC {}", self.mode)
     }
 }
 
@@ -33,7 +33,7 @@ impl Instruction for DEC {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::ZeroPage;
+    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageX};
     use crate::instructions::dec::DEC;
 
     #[test]
@@ -94,5 +94,12 @@ mod test {
         // Then
         assert_eq!(0xFF, cpu.read(&ZeroPage(0x04)));
         assert_eq!(0x80, cpu.processor_status);    // Negative flag is set
+    }
+
+    #[test]
+    fn string_representation() {
+        let dec = DEC::new(ZeroPageX(0x8D));
+
+        assert_eq!("DEC $8D,X", dec.to_string())
     }
 }

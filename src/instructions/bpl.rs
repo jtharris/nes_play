@@ -14,7 +14,7 @@ impl BPL {
 
 impl Display for BPL {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BPL ${:02X}", self.relative)
     }
 }
 
@@ -77,5 +77,23 @@ mod test {
         // Then
         assert_eq!(cpu.program_counter, 0xF835);
         assert_eq!(cpu.processor_status, 0x00);
+    }
+
+    #[test]
+    fn string_representation_positive() {
+        // Given
+        let bpl = BPL::new(0x1F);
+
+        // Then
+        assert_eq!("BPL $1F", bpl.to_string())
+    }
+
+    #[test]
+    fn string_representation_negative() {
+        // Given
+        let bpl = BPL::new(-0x1A);
+
+        // Then
+        assert_eq!("BPL $E6", bpl.to_string())
     }
 }

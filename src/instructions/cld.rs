@@ -8,7 +8,7 @@ pub(super) struct CLD {}
 
 impl Display for CLD {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CLD")
     }
 }
 

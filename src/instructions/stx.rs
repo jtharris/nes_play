@@ -14,7 +14,7 @@ impl STX {
 
 impl Display for STX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "STX {}", self.mode)
     }
 }
 
@@ -29,7 +29,7 @@ impl Instruction for STX {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::ZeroPage;
+    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageY};
     use super::STX;
 
     #[test]
@@ -43,5 +43,12 @@ mod test {
 
         // Then
         assert_eq!(0xA7, cpu.read(&ZeroPage(0x88)))
+    }
+
+    #[test]
+    fn string_representation() {
+        let stx = STX::new(ZeroPageY(0x44));
+
+        assert_eq!("STX $44,Y", stx.to_string())
     }
 }

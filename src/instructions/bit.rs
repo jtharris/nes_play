@@ -14,7 +14,7 @@ impl BIT {
 
 impl Display for BIT {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "BIT {}", self.mode)
     }
 }
 
@@ -65,5 +65,14 @@ mod test {
 
         // Then
         assert_eq!(0xC0, cpu.processor_status);  // overflow and negative set and zero cleared
+    }
+
+    #[test]
+    fn string_representation() {
+        // Given
+        let bit = BIT::new(ZeroPage(0x0B));
+
+        // Then
+        assert_eq!("BIT $0B", bit.to_string())
     }
 }

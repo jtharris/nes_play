@@ -14,7 +14,7 @@ impl STY {
 
 impl Display for STY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "STY {}", self.mode)
     }
 }
 
@@ -29,7 +29,7 @@ impl Instruction for STY {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::ZeroPage;
+    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageX};
     use super::STY;
 
     #[test]
@@ -43,5 +43,12 @@ mod test {
 
         // Then
         assert_eq!(0xA7, cpu.read(&ZeroPage(0x88)))
+    }
+
+    #[test]
+    fn string_representation() {
+        let sty = STY::new(ZeroPageX(0xF1));
+
+        assert_eq!("STY $F1,X", sty.to_string())
     }
 }

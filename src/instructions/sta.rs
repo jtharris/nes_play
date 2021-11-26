@@ -14,7 +14,7 @@ impl STA {
 
 impl Display for STA {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "STA {}", self.mode)
     }
 }
 
@@ -38,7 +38,7 @@ impl Instruction for STA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::ZeroPage;
+    use crate::cpu::AddressingMode::{IndirectY, ZeroPage};
     use super::STA;
 
     #[test]
@@ -52,5 +52,12 @@ mod test {
 
         // Then
         assert_eq!(0xA7, cpu.read(&ZeroPage(0x88)))
+    }
+
+    #[test]
+    fn string_representation() {
+        let sta = STA::new(IndirectY(0x0C));
+
+        assert_eq!("STA ($0C),Y", sta.to_string())
     }
 }

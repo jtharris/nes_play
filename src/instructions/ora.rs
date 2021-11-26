@@ -14,7 +14,7 @@ impl ORA {
 
 impl Display for ORA {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "ORA {}", self.mode)
     }
 }
 
@@ -33,7 +33,7 @@ impl Instruction for ORA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectY};
     use crate::instructions::ora::ORA;
 
     #[test]
@@ -83,5 +83,12 @@ mod test {
         // Then
         assert_eq!(cpu.accumulator, 0b11011111);
         assert_eq!(cpu.processor_status, 0b10000000);  // Negative flag is set
+    }
+
+    #[test]
+    fn string_representation() {
+        let ora = ORA::new(IndirectY(0xB2));
+
+        assert_eq!("ORA ($B2),Y", ora.to_string())
     }
 }

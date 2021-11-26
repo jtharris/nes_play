@@ -14,7 +14,7 @@ impl CPY {
 
 impl Display for CPY {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(f, "CPY {}", self.mode)
     }
 }
 
@@ -74,5 +74,12 @@ mod test {
 
         // Then
         assert_eq!(0, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let cpy = CPY::new(Immediate(0xF9));
+
+        assert_eq!("CPY #$F9", cpy.to_string())
     }
 }
