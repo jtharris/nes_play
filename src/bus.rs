@@ -3,6 +3,8 @@ const RAM: u16 = 0x0000;
 const RAM_MIRRORS_END: u16 = 0x1FFF;
 const PPU_REGISTERS: u16 = 0x2000;
 const PPU_REGISTERS_MIRRORS_END: u16 = 0x3FFF;
+const PRG_ROM: u16 = 0x8000;
+const PRG_ROM_END: u16 = 0xFFFF;
 
 // These are to handle mirroring
 fn ram_address(addr: u16) -> usize {
@@ -13,15 +15,26 @@ fn ppu_register_address(addr: u16) -> usize {
     (addr & 0x2007) as usize
 }
 
+fn rom_address(addr: u16) -> usize {
+    (addr - PRG_ROM) as usize
+}
+
 pub struct Bus {
-    cpu_vram: [u8; 2048],
-    prg_rom: Vec<u8>
+    cpu_vram: [u8; 0x0800],
+    prg_rom: [u8; 0x8000]
 }
 
 impl Bus {
-    pub fn new(program: Vec<u8>) -> Self {
+    pub fn empty() -> Self {
+        Bus::new([0; 0x8000])
+    }
+
+    pub fn new(program: [u8; 0x8000]) -> Self {
        Bus {
-           cpu_vram: [0; 2048],
+           // Address space is 0x0000-0x2000 but it is mirrored twice due to only
+           // allowing for 11 bits in the address bus.
+           // See https://bugzmanov.github.io/nes_ebook/chapter_4.html
+           cpu_vram: [0; 0x0800],
            prg_rom: program
        }
     }
@@ -30,6 +43,7 @@ impl Bus {
         match addr {
             RAM ..= RAM_MIRRORS_END => self.cpu_vram[ram_address(addr)],
             PPU_REGISTERS ..= PPU_REGISTERS_MIRRORS_END => todo!("PPU not supported yet!"),
+            PRG_ROM ..= PRG_ROM_END => self.prg_rom[rom_address(addr)],
             _ => {
                 // Todo:  something else here?
                 println!("Ignoring memory read at:  {}", addr);
@@ -68,7 +82,7 @@ mod test {
     #[test]
     fn read_write_8bit_ram() {
         // Given
-        let mut bus = Bus::new(Vec::new());
+        let mut bus = Bus::empty();
         bus.write_mem8(0x0300, 0x1A);
 
         // Then
@@ -78,7 +92,7 @@ mod test {
     #[test]
     fn read_write_16bit_ram() {
         // Given
-        let mut bus = Bus::new(Vec::new());
+        let mut bus = Bus::empty();
         bus.write_mem16(0x0300, 0xFFE9);
 
         // Then
@@ -88,7 +102,7 @@ mod test {
     #[test]
     fn read_16bit_ram_little_endian() {
         // Given
-        let mut bus = Bus::new(Vec::new());
+        let mut bus = Bus::empty();
         bus.write_mem8(0x08A0, 0x10);
         bus.write_mem8(0x08A1, 0x28);
 
@@ -99,7 +113,7 @@ mod test {
     #[test]
     fn write_16bit_ram_little_endian() {
         // Given
-        let mut bus = Bus::new(Vec::new());
+        let mut bus = Bus::empty();
 
         // When
         bus.write_mem16(0x004A, 0xD82A);

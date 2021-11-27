@@ -79,11 +79,53 @@ impl Instruction for Unknown {
     }
 }
 
-//pub fn generate_instruction(cpu: &mut CPU) -> Box<dyn Instruction> {
-    //let opcode = program[cpu.program_counter as usize];
+pub fn generate_instruction(cpu: &mut CPU) -> Option<Box<dyn Instruction>> {
+    let opcode = cpu.read(&Absolute(cpu.program_counter));
 
+    if opcode == 0xFF {
+        return None
+    }
 
-//}
+    let inst_size = instruction_size(opcode);
+
+    let instruction = match inst_size {
+        1 => generate_1byte_instruction(opcode),
+        2 => generate_2byte_instruction(opcode, cpu.read(&Absolute(cpu.program_counter + 1))),
+        3 => generate_3byte_instruction(opcode, cpu.read_mem16(cpu.program_counter + 1)),
+        _ => panic!("Invalid instruction size!")
+    };
+
+    cpu.program_counter += inst_size as u16;
+
+    return Some(instruction);
+}
+
+// See https://www.masswerk.at/6502/6502_instruction_set.html#layout
+// for the table explaining this implementation
+fn instruction_size(opcode: u8) -> u8 {
+    let a = (opcode >> 5) & 0x07;
+    let b = (opcode >> 2) & 0x07;
+    let c = opcode & 0x03;
+
+    match (a,b,c) {
+        (_, 1, _) => 2,
+        (_, 3, _) => 3,
+        (_, 4, _) => 2,
+        (_, 5, _) => 2,
+        (_, 7, _) => 3,
+        (1, 0, 0) => 3,
+        (5, 0, 0) => 2,
+        (6, 0, 0) => 2,
+        (7, 0, 0) => 2,
+        (_, 0, 0) => 1,
+        (_, 0, _) => 2,
+        (_, 2, 1) => 2,
+        (_, 2, _) => 1,
+        (_, 6, 1) => 3,
+        (_, 6, _) => 1,
+        _ => panic!("Error finding size for opcode: {:02X}", opcode)
+    }
+}
 
 fn generate_1byte_instruction(opcode: u8) -> Box<dyn Instruction> {
     match opcode {

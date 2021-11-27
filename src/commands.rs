@@ -1,6 +1,7 @@
 use std::fs;
-use crate::rom::INes2Header;
 use std::convert::TryInto;
+use crate::rom::{INes2Header, INesRom};
+use crate::instructions::factory::generate_instruction;
 
 pub trait Command {
     fn execute(&self);
@@ -20,9 +21,30 @@ impl Info {
 impl Command for Info {
     fn execute(&self) {
         let contents = fs::read(&self.rom_filename).expect("Could not read file");
-        let header_bytes = contents[0..16].try_into().expect("Header not found");
+        let rom = INesRom::new(contents);
 
-        let header = INes2Header::new(header_bytes);
-        println!("{}", header);
+        println!("{}", rom.header);
+    }
+}
+
+pub struct Assembly {
+    rom_filename: String
+}
+
+impl Assembly {
+    pub fn new(file: &str) -> Self {
+        Assembly { rom_filename: file.parse().unwrap() }
+    }
+}
+
+impl Command for Assembly {
+    fn execute(&self) {
+        let contents = fs::read(&self.rom_filename).expect("Could not read file");
+        let rom = INesRom::new(contents);
+
+        let mut cpu = rom.to_cpu();
+        while let Some(instruction) = generate_instruction(&mut cpu) {
+            println!("{}", instruction)
+        }
     }
 }

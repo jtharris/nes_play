@@ -15,13 +15,13 @@ pub struct CPU {
 
 impl CPU {
     pub fn empty() -> Self {
-        CPU::new(Vec::new())
+        CPU::new([0; 0x8000])
     }
 
-    pub fn new(program: Vec<u8>) -> Self {
+    pub fn new(program: [u8; 0x8000]) -> Self {
         //http://wiki.nesdev.com/w/index.php/CPU_power_up_state
         CPU {
-            program_counter: 0,
+            program_counter: 0x8000,
             stack_pointer: 0xFD,
             accumulator: 0,
             index_register_x: 0,
