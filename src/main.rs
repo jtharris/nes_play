@@ -7,7 +7,7 @@ mod bus;
 extern crate clap;
 use clap::{App, Arg, SubCommand};
 
-use crate::commands::{Info, Command, Assembly};
+use crate::commands::{Info, Command, Log};
 
 fn main() {
     let app = App::new("NES Play")
@@ -17,9 +17,10 @@ fn main() {
             .about("Show ROM info")
             .arg(Arg::with_name("ROM").required(true))
         )
-        .subcommand(SubCommand::with_name("assembly")
-            .about("Print ASM code for ROM")
+        .subcommand(SubCommand::with_name("log")
+            .about("Generate execution log for ROM")
             .arg(Arg::with_name("ROM").required(true))
+            .arg(Arg::with_name("LOG").required(true))
         );
 
     let matches = app.get_matches();
@@ -29,8 +30,11 @@ fn main() {
         Info::new(filename).execute();
     }
 
-    if let Some(matches) = matches.subcommand_matches("assembly") {
-        let filename = matches.value_of("ROM").unwrap();
-        Assembly::new(filename).execute();
+    if let Some(matches) = matches.subcommand_matches("log") {
+        let rom_filename = matches.value_of("ROM").unwrap();
+        let log_filename = matches.value_of("LOG").unwrap();
+
+        let command = Log::new(rom_filename, log_filename);
+        command.execute();
     }
 }

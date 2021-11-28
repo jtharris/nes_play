@@ -12,9 +12,9 @@ impl Display for PHP {
 
 impl Instruction for PHP {
     fn execute(&self, cpu: &mut CPU) -> u8 {
-        // See http://wiki.nesdev.com/w/index.php/Status_flags#The_B_flag
+        // See http://wiki.nesdev.org/w/index.php/Status_flags#The_B_flag
         // for description of B-flag behavior
-        cpu.push_stack(cpu.processor_status | 0b0001_1000);
+        cpu.push_stack(cpu.processor_status | 0b0011_0000);
 
         3
     }
@@ -37,7 +37,7 @@ mod test {
 
         // Then
         assert_eq!(0b1000_0001, cpu.processor_status);  // PC remains the same
-        assert_eq!(0b1001_1001, cpu.pop_stack());
+        assert_eq!(0b1011_0001, cpu.pop_stack());
     }
 
     #[test]

@@ -1,6 +1,8 @@
 use std::fmt;
 use std::fmt::{Formatter, write};
+use std::io::Write;
 use crate::bus::Bus;
+use crate::instructions::factory::generate_instruction;
 
 // http://wiki.nesdev.com/w/index.php/CPU_registers
 pub struct CPU {
@@ -15,22 +17,24 @@ pub struct CPU {
 
 impl CPU {
     pub fn empty() -> Self {
-        CPU::new([0; 0x8000])
+        let mut cpu = CPU::new([0; 0x4000]);
+        cpu.processor_status = 0;   // Zero out the PS
+
+        cpu
     }
 
-    pub fn new(program: [u8; 0x8000]) -> Self {
+    pub fn new(program: [u8; 0x4000]) -> Self {
         //http://wiki.nesdev.com/w/index.php/CPU_power_up_state
         CPU {
-            program_counter: 0x8000,
+            program_counter: 0xC000,  // TODO:  This is standard?
             stack_pointer: 0xFD,
             accumulator: 0,
             index_register_x: 0,
             index_register_y: 0,
-            processor_status: 0,
+            processor_status: 0x24,  // This is from the nestest golden log...
             bus: Bus::new(program)
         }
     }
-
 
     // http://wiki.nesdev.com/w/index.php/Status_flags
     pub fn set_flag(&mut self, flag: StatusFlag, value: bool) {
@@ -159,6 +163,36 @@ impl CPU {
             1
         }
     }
+
+    pub fn log_execution(&mut self, mut log: Box<dyn Write>) {
+        let mut cycle: usize = 4;  // TODO:  Make this configurable?
+
+        loop {
+            let pc = self.program_counter;
+            let instruction = generate_instruction(self);
+
+            write!(log, "{:04X} ", pc);
+            write!(log, "         ");    // TODO:  Fill in bytes later
+            match &instruction {
+                Some(inst) => write!(log, "{:<25}", inst.to_string()),
+                None => write!(log, "{:<25}", "No Instruction")
+            };
+            write!(log, "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} ",
+                   self.accumulator, self.index_register_x, self.index_register_y,
+                   self.processor_status, self.stack_pointer);
+            write!(log, "PPU:  0, 0 ");  // TODO:  Figure this out too
+
+            match &instruction {
+                Some(inst) => {
+                    let new_cycles = inst.execute(self);
+                    cycle += new_cycles as usize;
+                },
+                None => return
+            };
+
+            writeln!(log, "CYC:{}", cycle);
+        }
+    }
 }
 
 
@@ -175,12 +209,12 @@ pub enum StatusFlag {
 impl StatusFlag {
     fn bitmask(&self) -> u8 {
         match self {
-            StatusFlag::Carry =>            0b00000001,
-            StatusFlag::Zero =>             0b00000010,
-            StatusFlag::InterruptDisable => 0b00000100,
-            StatusFlag::Decimal =>          0b00001000,
-            StatusFlag::Overflow =>         0b01000000,
-            StatusFlag::Negative =>         0b10000000
+            StatusFlag::Carry =>            0b0000_0001,
+            StatusFlag::Zero =>             0b0000_0010,
+            StatusFlag::InterruptDisable => 0b0000_0100,
+            StatusFlag::Decimal =>          0b0000_1000,
+            StatusFlag::Overflow =>         0b0100_0000,
+            StatusFlag::Negative =>         0b1000_0000
         }
     }
 }

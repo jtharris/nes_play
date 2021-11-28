@@ -23,7 +23,7 @@ pub struct INes2Header {
 
 pub struct INesRom {
     pub header: INes2Header,
-    prg_rom: [u8; 0x8000]
+    prg_rom: [u8; 0x4000]
 }
 
 impl INes2Header {
@@ -102,9 +102,9 @@ impl INesRom {
         let prg_rom_start = 16 + trainer_data_size;
         let prg_rom_end = prg_rom_start + header.prg_rom_size_bytes();
         let mut prg_vec = contents[prg_rom_start..prg_rom_end].to_vec();
-        prg_vec.resize(0x8000, 0);
+        prg_vec.resize(0x4000, 0);
 
-        let mut prg_rom: [u8; 0x8000] = [0xFF; 0x8000];
+        let mut prg_rom: [u8; 0x4000] = [0xFF; 0x4000];
         prg_rom.copy_from_slice(&prg_vec);
 
         INesRom{ header, prg_rom }

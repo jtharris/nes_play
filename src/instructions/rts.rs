@@ -14,7 +14,7 @@ impl Instruction for RTS {
     fn execute(&self, cpu: &mut CPU) -> u8 {
         let low_pc = cpu.pop_stack();
         let high_pc = cpu.pop_stack();
-        cpu.program_counter = u16::from_be_bytes([high_pc, low_pc]);
+        cpu.program_counter = u16::from_be_bytes([high_pc, low_pc]) + 1;
 
         6
     }
@@ -36,6 +36,6 @@ mod test {
         RTS{}.execute(&mut cpu);
 
         // Then
-        assert_eq!(0xA1C3, cpu.program_counter);
+        assert_eq!(0xA1C4, cpu.program_counter);
     }
 }

@@ -3,7 +3,7 @@ const RAM: u16 = 0x0000;
 const RAM_MIRRORS_END: u16 = 0x1FFF;
 const PPU_REGISTERS: u16 = 0x2000;
 const PPU_REGISTERS_MIRRORS_END: u16 = 0x3FFF;
-const PRG_ROM: u16 = 0x8000;
+const PRG_ROM: u16 = 0xC000;
 const PRG_ROM_END: u16 = 0xFFFF;
 
 // These are to handle mirroring
@@ -21,15 +21,15 @@ fn rom_address(addr: u16) -> usize {
 
 pub struct Bus {
     cpu_vram: [u8; 0x0800],
-    prg_rom: [u8; 0x8000]
+    prg_rom: [u8; 0x4000]
 }
 
 impl Bus {
     pub fn empty() -> Self {
-        Bus::new([0; 0x8000])
+        Bus::new([0; 0x4000])
     }
 
-    pub fn new(program: [u8; 0x8000]) -> Self {
+    pub fn new(program: [u8; 0x4000]) -> Self {
        Bus {
            // Address space is 0x0000-0x2000 but it is mirrored twice due to only
            // allowing for 11 bits in the address bus.

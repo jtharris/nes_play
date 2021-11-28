@@ -20,11 +20,11 @@ impl Display for BIT {
 
 impl Instruction for BIT {
     fn execute(&self, cpu: &mut CPU) -> u8 {
-        let val = cpu.accumulator & cpu.read(&self.mode);
+        let operand = cpu.read(&self.mode);
 
-        cpu.set_flag(StatusFlag::Zero, val == 0);
-        cpu.set_flag(StatusFlag::Overflow, val & 0x40 == 0x40);  // if 6th bit is set
-        cpu.set_flag(StatusFlag::Negative, val > 0x7F);          // if 7th bit is set
+        cpu.set_flag(StatusFlag::Zero, cpu.accumulator & operand == 0);
+        cpu.set_flag(StatusFlag::Overflow, operand & 0x40 == 0x40);  // if 6th bit is set
+        cpu.set_flag(StatusFlag::Negative, operand > 0x7F);          // if 7th bit is set
 
         cpu.default_cycles(&self.mode)
     }
@@ -40,8 +40,8 @@ mod test {
         // Given
         let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA8);
-        cpu.write(&mode, 0xF0);
-        cpu.accumulator = 0x0F;
+        cpu.write(&mode, 0x0F);
+        cpu.accumulator = 0xF0;
         cpu.processor_status = 0b11000000;       // overflow and negative set
 
         // When
