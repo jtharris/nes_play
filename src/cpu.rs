@@ -66,7 +66,13 @@ impl CPU {
                 self.bus.read_mem16(base.wrapping_add(self.index_register_x) as u16)
             }
             &AddressingMode::IndirectY(address) => {
-                self.bus.read_mem16(address as u16).wrapping_add(self.index_register_y as u16)
+                let bytes = [
+                    self.bus.read_mem8(address as u16),
+                    self.bus.read_mem8(address.wrapping_add(1) as u16)
+                ];
+                let value = u16::from_le_bytes(bytes);
+
+                value.wrapping_add(self.index_register_y as u16)
             }
             &AddressingMode::ZeroPage(address) => address as u16,
             &AddressingMode::ZeroPageX(base) => {
@@ -268,6 +274,7 @@ pub trait Instruction: fmt::Display {
 mod test {
     use super::CPU;
     use crate::cpu::AddressingMode::*;
+    use crate::cpu::StatusFlag;
 
     #[test]
     fn read_write_16bit_memory() {
@@ -506,7 +513,6 @@ mod test {
         assert_eq!(0x0A, cpu.bus.read_mem8(0x0705));
     }
 
-
     #[test]
     fn indirect_y_read() {
         // Example from Indexed indirect here:  https://skilldrick.github.io/easy6502/#addressing
@@ -520,6 +526,20 @@ mod test {
 
         // Then
         assert_eq!(0x0A, cpu.read(&IndirectY(0x01)));
+    }
+
+    // https://stackoverflow.com/questions/46262435/indirect-y-indexed-addressing-mode-in-mos-6502
+    #[test]
+    fn indirect_y_read_with_carry() {
+        let mut cpu = CPU::empty();
+
+        cpu.index_register_y = 0x90;
+        cpu.bus.write_mem8(0x02, 0x80);
+        cpu.bus.write_mem8(0x03, 0x02);
+        cpu.bus.write_mem8(0x0310, 0xCA);
+
+        // Then
+        assert_eq!(0xCA, cpu.read(&IndirectY(0x02)));
     }
 
     #[test]

@@ -1,5 +1,6 @@
 use std::fmt::{Display, Formatter};
 use crate::cpu::{CPU, Instruction};
+use crate::cpu::AddressingMode::Absolute;
 
 pub(super) enum JumpAddressMode {
     Absolute(u16),
@@ -36,7 +37,21 @@ impl Instruction for JMP {
     fn execute(&self, cpu: &mut CPU) -> u8 {
         cpu.program_counter = match self.mode {
             JumpAddressMode::Absolute(target) => target,
-            JumpAddressMode::Indirect(address) => cpu.read_mem16(address)
+            JumpAddressMode::Indirect(address) => {
+                // See here for explanation:
+                // http://www.6502.org/tutorials/6502opcodes.html#JMP
+                let address_parts = address.to_be_bytes();
+                let high_byte_address = u16::from_be_bytes([
+                    address_parts[0],
+                    address_parts[1].wrapping_add(1)
+                ]);
+
+                let bytes = [
+                    cpu.read(&Absolute(address)),
+                    cpu.read(&Absolute(high_byte_address))
+                ];
+                u16::from_le_bytes(bytes)
+            }
         };
 
         match self.mode {
@@ -48,7 +63,7 @@ impl Instruction for JMP {
 
 #[cfg(test)]
 mod test {
-    use crate::cpu::{CPU, Instruction};
+    use crate::cpu::{AddressingMode, CPU, Instruction};
     use super::{JMP, JumpAddressMode::*};
 
     #[test]
@@ -74,6 +89,24 @@ mod test {
 
         // Then
         assert_eq!(0x118C, cpu.program_counter);
+    }
+
+    #[test]
+    fn nestest_scenario1() {
+        // Given
+        let mut cpu = CPU::empty();
+
+        cpu.write(&AddressingMode::Absolute(0x02FF), 0x00);
+        cpu.write(&AddressingMode::Absolute(0x0300), 0xA9);
+        cpu.write(&AddressingMode::Absolute(0x0200), 0x03);
+        cpu.write(&AddressingMode::Absolute(0x0301), 0xAA);
+        cpu.write(&AddressingMode::Absolute(0x0302), 0x60);
+
+        // When
+        JMP::new(Indirect(0x02FF)).execute(&mut cpu);
+
+        // Then
+        assert_eq!(0x0300, cpu.program_counter);
     }
 
     #[test]

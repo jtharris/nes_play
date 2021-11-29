@@ -38,7 +38,7 @@ impl Instruction for STA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{IndirectY, ZeroPage};
+    use crate::cpu::AddressingMode::{Absolute, IndirectY, ZeroPage};
     use super::STA;
 
     #[test]
@@ -52,6 +52,19 @@ mod test {
 
         // Then
         assert_eq!(0xA7, cpu.read(&ZeroPage(0x88)))
+    }
+
+    #[test]
+    fn absolute_address_mode() {
+        // Given
+        let mut cpu = CPU::empty();
+        cpu.accumulator = 0x12;
+
+        // When
+        STA::new(Absolute(0x0245)).execute(&mut cpu);
+
+        // Then
+        assert_eq!(0x12, cpu.read(&Absolute(0x0245)));
     }
 
     #[test]

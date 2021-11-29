@@ -32,7 +32,7 @@ impl Instruction for LDA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX, IndirectY, Absolute};
     use super::LDA;
 
     #[test]
@@ -75,6 +75,27 @@ mod test {
         // Then
         assert_eq!(0x6A, cpu.accumulator);
         assert_eq!(0x00, cpu.processor_status);
+    }
+
+    #[test]
+    fn nestest_scenario1() {
+        // Given
+        let mut cpu = CPU::empty();
+        cpu.accumulator = 0x01;
+        cpu.index_register_x = 0x65;
+        cpu.index_register_y = 0xFF;
+        cpu.processor_status = 0xE5;
+
+        cpu.write(&ZeroPage(0xFF), 0x46);
+        cpu.write(&ZeroPage(0x00), 0x01);
+        cpu.write(&Absolute(0x0245), 0x12);
+
+        // When
+        LDA::new(IndirectY(0xFF)).execute(&mut cpu);
+
+        // Then
+        assert_eq!(0x12, cpu.accumulator);
+        assert_eq!(0x65, cpu.processor_status);
     }
 
     #[test]

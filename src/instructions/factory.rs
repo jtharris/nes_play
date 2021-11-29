@@ -69,13 +69,14 @@ impl Unknown {
 
 impl Display for Unknown {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "Unknown opcode:  ${:X}", self.opcode)
+        write!(f, "*NOP ${:02X}", self.opcode)
     }
 }
 
 impl Instruction for Unknown {
     fn execute(&self, _: &mut CPU) -> u8 {
-        panic!("Unknown opcode encountered!  {}", self.opcode);
+        // do nothing sentence
+        3
     }
 }
 

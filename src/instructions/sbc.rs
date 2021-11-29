@@ -30,7 +30,9 @@ impl Instruction for SBC {
         // http://nesdev.com/6502_cpu.txt
         // http://www.6502.org/tutorials/vflag.html
         let carry = diff <= 0xFF;
-        let overflow = diff > 0xFF7F || diff < 0xFE80;
+        // See logic in:  https://github.com/bfirsh/jsnes/blob/master/src/cpu.js
+        let overflow = (cpu.accumulator ^ memory_value as u8) & 0x80 != 0 &&
+            (cpu.accumulator ^ diff as u8) & 0x80 != 0;
 
         cpu.accumulator = diff as u8;
         cpu.set_flag(StatusFlag::Carry, carry);
@@ -63,7 +65,7 @@ mod test {
 
         // Then
         assert_eq!(0x07, cpu.accumulator);
-        assert_eq!(0b01000001, cpu.processor_status);   // carry and overflow
+        assert_eq!(0b00000001, cpu.processor_status);   // carry only
     }
 
     #[test]
@@ -81,11 +83,11 @@ mod test {
 
         // Then
         assert_eq!(0x06, cpu.accumulator);  // Subtract one more because carry was 0
-        assert_eq!(0b01000001, cpu.processor_status);  // carry and overflow
+        assert_eq!(0b00000001, cpu.processor_status);  // carry
     }
 
     #[test]
-    fn sub_setting_overflow_and_negative() {
+    fn sub_setting_negative() {
         // Given
         let mut cpu = CPU::empty();
         let mode = ZeroPage(0xA1);
@@ -98,24 +100,7 @@ mod test {
 
         // Then
         assert_eq!(0xFB, cpu.accumulator);
-        assert_eq!(0b11000000, cpu.processor_status);  // negative and overflow
-    }
-
-    #[test]
-    fn sub_with_overflow_zero() {
-        // Given
-        let mut cpu = CPU::empty();
-        cpu.set_flag(StatusFlag::Carry, true);
-
-        cpu.accumulator = 0xFF;
-        let mode = Immediate(0xFF);
-
-        // When
-        SBC::new(mode).execute(&mut cpu);
-
-        // Then
-        assert_eq!(0x00, cpu.accumulator);
-        assert_eq!(0b01000011, cpu.processor_status);
+        assert_eq!(0b1000_0000, cpu.processor_status);  // negative
     }
 
     #[test]
@@ -133,6 +118,47 @@ mod test {
         // Then
         assert_eq!(0x60, cpu.accumulator);
         assert_eq!(0b00000000, cpu.processor_status);  // no overflow, carry, or negative
+    }
+
+    #[test]
+    fn nestest_scenario1() {
+        // Given
+        let mut cpu = CPU::empty();
+        cpu.accumulator = 0x40;
+        cpu.index_register_x = 0xAA;
+        cpu.index_register_y = 0x71;
+        cpu.processor_status = 0x65;
+
+        // When
+        SBC::new(Immediate(0x40)).execute(&mut cpu);
+
+        // Then
+        assert_eq!(0x00, cpu.accumulator);
+        assert_eq!(0xAA, cpu.index_register_x);
+        assert_eq!(0x71, cpu.index_register_y);
+        assert_eq!(0x27, cpu.processor_status);
+    }
+
+    #[test]
+    fn nestest_scenario2() {
+        // Given
+        let mut cpu = CPU::empty();
+        cpu.accumulator = 0x40;
+        cpu.index_register_x = 0xAA;
+        cpu.index_register_y = 0x73;
+        cpu.processor_status = 0xE5;
+
+        // When
+        SBC::new(Immediate(0x41)).execute(&mut cpu);
+
+        println!("Expected:  {:b}", 0xA4);
+        println!("Actual:    {:b}", cpu.processor_status);
+
+        // Then
+        assert_eq!(0xFF, cpu.accumulator);
+        assert_eq!(0xAA, cpu.index_register_x);
+        assert_eq!(0x73, cpu.index_register_y);
+        assert_eq!(0xA4, cpu.processor_status);
     }
 
     #[test]
