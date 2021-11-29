@@ -29,6 +29,7 @@ use crate::instructions::inx::INX;
 use crate::instructions::iny::INY;
 use crate::instructions::jmp::{JMP, JumpAddressMode};
 use crate::instructions::jsr::JSR;
+use crate::instructions::lax::LAX;
 use crate::instructions::lda::LDA;
 use crate::instructions::ldx::LDX;
 use crate::instructions::ldy::LDY;
@@ -238,6 +239,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0x96 => Box::new(STX::new(ZeroPageY(arg))),
         0x84 => Box::new(STY::new(ZeroPage(arg))),
         0x94 => Box::new(STY::new(ZeroPageX(arg))),
+        0xA7 => Box::new(LAX::new(ZeroPage(arg))),
+        0xB7 => Box::new(LAX::new(ZeroPageY(arg))),
+        0xA3 => Box::new(LAX::new(IndirectX(arg))),
+        0xB3 => Box::new(LAX::new(IndirectY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -293,6 +298,8 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0x99 => Box::new(STA::new(AbsoluteY(arg))),
         0x8E => Box::new(STX::new(Absolute(arg))),
         0x8C => Box::new(STY::new(Absolute(arg))),
+        0xAF => Box::new(LAX::new(Absolute(arg))),
+        0xBF => Box::new(LAX::new(AbsoluteY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
