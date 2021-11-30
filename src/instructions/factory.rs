@@ -44,6 +44,7 @@ use crate::instructions::rol::ROL;
 use crate::instructions::ror::ROR;
 use crate::instructions::rti::RTI;
 use crate::instructions::rts::RTS;
+use crate::instructions::sax::SAX;
 use crate::instructions::sbc::SBC;
 use crate::instructions::sec::SEC;
 use crate::instructions::sed::SED;
@@ -122,6 +123,7 @@ fn instruction_size(opcode: u8) -> u8 {
         (_, 0, 0) => 1,
         (_, 0, _) => 2,
         (_, 2, 1) => 2,
+        (_, 2, 3) => 2,
         (_, 2, _) => 1,
         (_, 6, 1) => 3,
         (_, 6, _) => 1,
@@ -243,6 +245,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0xB7 => Box::new(LAX::new(ZeroPageY(arg))),
         0xA3 => Box::new(LAX::new(IndirectX(arg))),
         0xB3 => Box::new(LAX::new(IndirectY(arg))),
+        0x87 => Box::new(SAX::new(ZeroPage(arg))),
+        0x97 => Box::new(SAX::new(ZeroPageY(arg))),
+        0x83 => Box::new(SAX::new(IndirectX(arg))),
+        0xEB => Box::new(SBC::new(Immediate(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -300,6 +306,7 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0x8C => Box::new(STY::new(Absolute(arg))),
         0xAF => Box::new(LAX::new(Absolute(arg))),
         0xBF => Box::new(LAX::new(AbsoluteY(arg))),
+        0x8F => Box::new(SAX::new(Absolute(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }

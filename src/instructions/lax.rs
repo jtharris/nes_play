@@ -16,7 +16,7 @@ impl LAX {
 
 impl Display for LAX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "LAX {}", self.mode)
+        write!(f, "*LAX {}", self.mode)
     }
 }
 
@@ -54,5 +54,12 @@ mod test {
         assert_eq!(0xFE, cpu.accumulator);
         assert_eq!(0xFE, cpu.index_register_x);
         assert_eq!(0b1000_0000, cpu.processor_status);
+    }
+
+    #[test]
+    fn string_representation() {
+        let lax = LAX::new(AddressingMode::IndirectY(0x55));
+
+        assert_eq!("*LAX ($55),Y", lax.to_string());
     }
 }
