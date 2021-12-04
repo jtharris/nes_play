@@ -20,6 +20,7 @@ use crate::instructions::clv::CLV;
 use crate::instructions::cmp::CMP;
 use crate::instructions::cpx::CPX;
 use crate::instructions::cpy::CPY;
+use crate::instructions::dcp::DCP;
 use crate::instructions::dec::DEC;
 use crate::instructions::dex::DEX;
 use crate::instructions::dey::DEY;
@@ -249,6 +250,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0x97 => Box::new(SAX::new(ZeroPageY(arg))),
         0x83 => Box::new(SAX::new(IndirectX(arg))),
         0xEB => Box::new(SBC::new(Immediate(arg))),
+        0xC7 => Box::new(DCP::new(ZeroPage(arg))),
+        0xD7 => Box::new(DCP::new(ZeroPageX(arg))),
+        0xC3 => Box::new(DCP::new(IndirectX(arg))),
+        0xD3 => Box::new(DCP::new(IndirectY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -307,6 +312,9 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0xAF => Box::new(LAX::new(Absolute(arg))),
         0xBF => Box::new(LAX::new(AbsoluteY(arg))),
         0x8F => Box::new(SAX::new(Absolute(arg))),
+        0xCF => Box::new(DCP::new(Absolute(arg))),
+        0xDF => Box::new(DCP::new(AbsoluteX(arg))),
+        0xDB => Box::new(DCP::new(AbsoluteY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }

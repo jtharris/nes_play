@@ -119,6 +119,9 @@ impl CPU {
             &AddressingMode::ZeroPageX(_) => 6,
             &AddressingMode::Absolute(_) => 6,
             &AddressingMode::AbsoluteX(_) => 7,
+            &AddressingMode::AbsoluteY(_) => 7,
+            &AddressingMode::IndirectX(_) => 8,
+            &AddressingMode::IndirectY(_) => 8,
             _ => panic!("Invalid addressing mode for memory cycles")
         }
     }
