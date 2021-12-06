@@ -28,6 +28,7 @@ use crate::instructions::eor::EOR;
 use crate::instructions::inc::INC;
 use crate::instructions::inx::INX;
 use crate::instructions::iny::INY;
+use crate::instructions::isc::ISC;
 use crate::instructions::jmp::{JMP, JumpAddressMode};
 use crate::instructions::jsr::JSR;
 use crate::instructions::lax::LAX;
@@ -85,11 +86,6 @@ impl Instruction for Unknown {
 
 pub fn generate_instruction(cpu: &mut CPU) -> Option<Box<dyn Instruction>> {
     let opcode = cpu.read(&Absolute(cpu.program_counter));
-
-    if opcode == 0xFF {
-        return None
-    }
-
     let inst_size = instruction_size(opcode);
 
     let instruction = match inst_size {
@@ -127,6 +123,7 @@ fn instruction_size(opcode: u8) -> u8 {
         (_, 2, 3) => 2,
         (_, 2, _) => 1,
         (_, 6, 1) => 3,
+        (_, 6, 3) => 3,
         (_, 6, _) => 1,
         _ => panic!("Error finding size for opcode: {:02X}", opcode)
     }
@@ -254,6 +251,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0xD7 => Box::new(DCP::new(ZeroPageX(arg))),
         0xC3 => Box::new(DCP::new(IndirectX(arg))),
         0xD3 => Box::new(DCP::new(IndirectY(arg))),
+        0xE7 => Box::new(ISC::new(ZeroPage(arg))),
+        0xF7 => Box::new(ISC::new(ZeroPageX(arg))),
+        0xE3 => Box::new(ISC::new(IndirectX(arg))),
+        0xF3 => Box::new(ISC::new(IndirectY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -315,6 +316,9 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0xCF => Box::new(DCP::new(Absolute(arg))),
         0xDF => Box::new(DCP::new(AbsoluteX(arg))),
         0xDB => Box::new(DCP::new(AbsoluteY(arg))),
+        0xEF => Box::new(ISC::new(Absolute(arg))),
+        0xFF => Box::new(ISC::new(AbsoluteX(arg))),
+        0xFB => Box::new(ISC::new(AbsoluteY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }

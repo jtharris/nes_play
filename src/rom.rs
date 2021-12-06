@@ -104,7 +104,7 @@ impl INesRom {
         let mut prg_vec = contents[prg_rom_start..prg_rom_end].to_vec();
         prg_vec.resize(0x4000, 0);
 
-        let mut prg_rom: [u8; 0x4000] = [0xFF; 0x4000];
+        let mut prg_rom: [u8; 0x4000] = [0x00; 0x4000];
         prg_rom.copy_from_slice(&prg_vec);
 
         INesRom{ header, prg_rom }
