@@ -51,6 +51,7 @@ use crate::instructions::sbc::SBC;
 use crate::instructions::sec::SEC;
 use crate::instructions::sed::SED;
 use crate::instructions::sei::SEI;
+use crate::instructions::slo::SLO;
 use crate::instructions::sta::STA;
 use crate::instructions::stx::STX;
 use crate::instructions::sty::STY;
@@ -255,6 +256,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0xF7 => Box::new(ISC::new(ZeroPageX(arg))),
         0xE3 => Box::new(ISC::new(IndirectX(arg))),
         0xF3 => Box::new(ISC::new(IndirectY(arg))),
+        0x07 => Box::new(SLO::new(ZeroPage(arg))),
+        0x17 => Box::new(SLO::new(ZeroPageX(arg))),
+        0x03 => Box::new(SLO::new(IndirectX(arg))),
+        0x13 => Box::new(SLO::new(IndirectY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -319,6 +324,9 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0xEF => Box::new(ISC::new(Absolute(arg))),
         0xFF => Box::new(ISC::new(AbsoluteX(arg))),
         0xFB => Box::new(ISC::new(AbsoluteY(arg))),
+        0x0F => Box::new(SLO::new(Absolute(arg))),
+        0x1F => Box::new(SLO::new(AbsoluteX(arg))),
+        0x1B => Box::new(SLO::new(AbsoluteY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
