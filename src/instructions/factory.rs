@@ -42,6 +42,7 @@ use crate::instructions::pha::PHA;
 use crate::instructions::php::PHP;
 use crate::instructions::pla::PLA;
 use crate::instructions::plp::PLP;
+use crate::instructions::rla::RLA;
 use crate::instructions::rol::ROL;
 use crate::instructions::ror::ROR;
 use crate::instructions::rti::RTI;
@@ -260,6 +261,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0x17 => Box::new(SLO::new(ZeroPageX(arg))),
         0x03 => Box::new(SLO::new(IndirectX(arg))),
         0x13 => Box::new(SLO::new(IndirectY(arg))),
+        0x27 => Box::new(RLA::new(ZeroPage(arg))),
+        0x37 => Box::new(RLA::new(ZeroPageX(arg))),
+        0x23 => Box::new(RLA::new(IndirectX(arg))),
+        0x33 => Box::new(RLA::new(IndirectY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
@@ -327,6 +332,9 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0x0F => Box::new(SLO::new(Absolute(arg))),
         0x1F => Box::new(SLO::new(AbsoluteX(arg))),
         0x1B => Box::new(SLO::new(AbsoluteY(arg))),
+        0x2F => Box::new(RLA::new(Absolute(arg))),
+        0x3F => Box::new(RLA::new(AbsoluteX(arg))),
+        0x3B => Box::new(RLA::new(AbsoluteY(arg))),
 
         _ => Box::new(Unknown::new(opcode))
     }
