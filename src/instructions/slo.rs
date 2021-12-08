@@ -53,7 +53,7 @@ mod test {
 
         // Then
         assert_eq!(0x14, cpu.read(&AddressingMode::ZeroPage(0x8C)));
-        assert_eq!(0x0F, cpu.accumulator);
+        assert_eq!(0x17, cpu.accumulator);
         assert_eq!(0b0000_0000, cpu.processor_status);
     }
 
