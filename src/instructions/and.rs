@@ -3,12 +3,13 @@ use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#AND
 pub(super) struct AND {
+    opcode: u8,
     mode: AddressingMode
 }
 
 impl AND {
-    pub fn new(mode: AddressingMode) -> Self {
-        AND{ mode }
+    pub fn new(opcode: u8, mode: AddressingMode) -> Self {
+        AND{ opcode, mode }
     }
 }
 
@@ -26,6 +27,13 @@ impl Instruction for AND {
         cpu.set_flag(StatusFlag::Negative, cpu.accumulator > 0x7F);
 
         cpu.default_cycles(&self.mode)
+    }
+
+    fn bytes(&self) -> Vec<u8> {
+        let mut byte_vec = vec![self.opcode];
+        byte_vec.extend(self.mode.bytes());
+
+        return byte_vec;
     }
 }
 

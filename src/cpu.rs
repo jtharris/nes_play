@@ -263,6 +263,23 @@ impl fmt::Display for AddressingMode {
     }
 }
 
+impl AddressingMode {
+    pub fn bytes(&self) -> Vec<u8> {
+        match self {
+            AddressingMode::Accumulator => vec!(),
+            AddressingMode::Absolute(addr) => Vec::from(addr.to_be_bytes()),
+            AddressingMode::AbsoluteX(addr) => Vec::from(addr.to_be_bytes()),
+            AddressingMode::AbsoluteY(addr) => Vec::from(addr.to_be_bytes()),
+            AddressingMode::Immediate(val) => vec![val],
+            AddressingMode::IndirectX(addr) => vec![addr],
+            AddressingMode::IndirectY(addr) => vec![addr],
+            AddressingMode::ZeroPage(addr) => vec![addr],
+            AddressingMode::ZeroPageX(addr) => vec![addr],
+            AddressingMode::ZeroPageY(addr) => vec![addr],
+        }
+    }
+}
+
 
 // Instructions are implemented as a visitor pattern, each being executable on
 // a given CPU reference
@@ -270,6 +287,7 @@ impl fmt::Display for AddressingMode {
 // Return value is the number of machine cycles take to execute
 pub trait Instruction: fmt::Display {
     fn execute(&self, cpu: &mut CPU) -> u8;
+    fn bytes(&self) -> Vec<u8>;
 }
 
 
