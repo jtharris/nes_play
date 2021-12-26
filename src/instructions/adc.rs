@@ -3,13 +3,12 @@ use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#ADC
 pub(super) struct ADC {
-    opcode: u8,
     mode: AddressingMode
 }
 
 impl ADC {
-    pub fn new(opcode: u8, mode: AddressingMode) -> Self {
-        ADC{ opcode, mode }
+    pub fn new(mode: AddressingMode) -> Self {
+        ADC{ mode }
     }
 }
 
@@ -41,10 +40,17 @@ impl Instruction for ADC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        let mut byte_vec = vec![self.opcode];
-        byte_vec.extend(self.mode.bytes());
-
-        return byte_vec;
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0x69, val],
+            AddressingMode::ZeroPage(addr) => vec![0x65, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x75, addr],
+            AddressingMode::Absolute(addr) => vec![0x6D, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0x7D, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
+            AddressingMode::AbsoluteY(addr) => vec![0x79, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
+            AddressingMode::IndirectX(addr) => vec![0x61, addr],
+            AddressingMode::IndirectY(addr) => vec![0x71, addr],
+            _ => panic!("Addressing mode not allowed for ADC")
+        }
     }
 }
 
@@ -180,6 +186,15 @@ mod test {
 
         // Then
         assert_eq!("ADC $003A,X", adc.to_string());
+    }
+
+    #[test]
+    fn binary_representation() {
+        // Given
+        let adc = ADC::new(Absolute(0xD8E1));
+
+        // Then
+        assert_eq!(vec![0x6D, 0xD8, 0xE1], adc.bytes());
     }
 
 }

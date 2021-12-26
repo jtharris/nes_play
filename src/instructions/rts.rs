@@ -18,6 +18,10 @@ impl Instruction for RTS {
 
         6
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

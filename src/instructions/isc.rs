@@ -46,6 +46,10 @@ impl Instruction for ISC {
             m => cpu.memory_cycles(m)
         }
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

@@ -17,6 +17,10 @@ impl Instruction for CLD {
         cpu.set_flag(StatusFlag::Decimal, false);
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

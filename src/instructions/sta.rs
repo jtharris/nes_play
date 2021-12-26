@@ -33,6 +33,10 @@ impl Instruction for STA {
             _ => panic!("Invalid addressing mode for STA")
         }
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

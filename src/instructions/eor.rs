@@ -28,6 +28,10 @@ impl Instruction for EOR {
 
         cpu.default_cycles(&self.mode)
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

@@ -12,4 +12,8 @@ impl Display for NOP {
 
 impl Instruction for NOP {
     fn execute(&self, _cpu: &mut CPU) -> u8 { 2 }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }

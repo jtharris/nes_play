@@ -27,6 +27,10 @@ impl Instruction for ORA {
 
         cpu.default_cycles(&self.mode)
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

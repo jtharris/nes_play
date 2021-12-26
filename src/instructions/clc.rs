@@ -15,6 +15,10 @@ impl Instruction for CLC {
         cpu.set_flag(StatusFlag::Carry, false);
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

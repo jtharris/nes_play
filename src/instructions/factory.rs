@@ -86,6 +86,10 @@ impl Instruction for Unknown {
         // do nothing sentence
         3
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        vec![]
+    }
 }
 
 pub fn generate_instruction(cpu: &mut CPU) -> Option<Box<dyn Instruction>> {

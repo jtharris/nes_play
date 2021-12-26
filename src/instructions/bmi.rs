@@ -27,6 +27,10 @@ impl Instruction for BMI {
             2
         }
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

@@ -19,6 +19,10 @@ impl Instruction for PLP {
 
         4
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

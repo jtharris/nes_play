@@ -28,6 +28,10 @@ impl Instruction for DEC {
 
         cpu.memory_cycles(&self.mode)
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

@@ -19,6 +19,10 @@ impl Instruction for TYA {
 
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

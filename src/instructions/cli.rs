@@ -15,6 +15,10 @@ impl Instruction for CLI {
         cpu.set_flag(StatusFlag::InterruptDisable, false);
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

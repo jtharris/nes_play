@@ -19,6 +19,10 @@ impl Instruction for TSX {
 
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

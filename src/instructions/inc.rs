@@ -34,6 +34,10 @@ impl Instruction for INC {
             _ => panic!("Invalid addressing mode for INC")
         }
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

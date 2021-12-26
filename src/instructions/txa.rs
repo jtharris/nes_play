@@ -19,6 +19,10 @@ impl Instruction for TXA {
 
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

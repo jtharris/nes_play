@@ -16,6 +16,10 @@ impl Instruction for PHA {
 
         3
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

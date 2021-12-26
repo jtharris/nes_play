@@ -15,6 +15,10 @@ impl Instruction for CLV {
         cpu.set_flag(StatusFlag::Overflow, false);
         2
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 

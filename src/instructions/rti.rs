@@ -22,6 +22,10 @@ impl Instruction for RTI {
 
         6
     }
+
+    fn bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
