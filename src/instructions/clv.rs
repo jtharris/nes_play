@@ -17,7 +17,7 @@ impl Instruction for CLV {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xB8]
     }
 }
 

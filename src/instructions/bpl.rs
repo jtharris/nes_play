@@ -29,7 +29,7 @@ impl Instruction for BPL {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x10, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BPL $E6", bpl.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bpl = BPL::new(0x02);
+
+        // Then
+        assert_eq!(vec![0x10, 0x02], bpl.bytes());
     }
 }

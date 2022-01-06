@@ -30,13 +30,17 @@ impl Instruction for BIT {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x24, addr],
+            AddressingMode::Absolute(addr) => vec![0x2C, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            _ => panic!("Addressing Mode not allowed for BIT!")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::cpu::{CPU, Instruction, AddressingMode::ZeroPage};
+    use crate::cpu::{CPU, Instruction, AddressingMode::ZeroPage, AddressingMode};
     use super::BIT;
 
     #[test]
@@ -78,5 +82,14 @@ mod test {
 
         // Then
         assert_eq!("BIT $0B", bit.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bit = BIT::new(AddressingMode::Absolute(0xDC0A));
+
+        // Then
+        assert_eq!(vec![0x2C, 0x0A, 0xDC], bit.bytes());
     }
 }

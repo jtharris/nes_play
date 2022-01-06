@@ -32,13 +32,20 @@ impl Instruction for ASL {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Accumulator => vec![0x0A],
+            AddressingMode::ZeroPage(addr) => vec![0x06, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x16, addr],
+            AddressingMode::Absolute(addr) => vec![0x0E, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0x1E, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            _ => panic!("Addressing mode not allowed for ASL")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::cpu::AddressingMode::{Accumulator, ZeroPage};
+    use crate::cpu::AddressingMode::{Accumulator, ZeroPage, ZeroPageX};
     use crate::cpu::{CPU, Instruction};
     use crate::instructions::asl::ASL;
 
@@ -98,5 +105,15 @@ mod test {
 
         // Then
         assert_eq!("ASL A", asl.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let asl = ASL::new(ZeroPageX(0xDD));
+
+        // Then
+        assert_eq!(vec![0x16, 0xDD], asl.bytes());
+
     }
 }

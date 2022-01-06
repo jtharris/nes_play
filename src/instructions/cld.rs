@@ -19,7 +19,7 @@ impl Instruction for CLD {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xD8]
     }
 }
 

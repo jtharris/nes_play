@@ -17,7 +17,7 @@ impl Instruction for CLI {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x58]
     }
 }
 

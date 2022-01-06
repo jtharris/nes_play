@@ -29,7 +29,7 @@ impl Instruction for BNE {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xD0, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BNE $EF", bne.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bne = BNE::new(-0x10);
+
+        // Then
+        assert_eq!(vec![0xD0, 0xF0], bne.bytes());
     }
 }

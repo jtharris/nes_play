@@ -29,7 +29,7 @@ impl Instruction for BEQ {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xF0, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BEQ $FF", beq.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let beq = BEQ::new(0x77);
+
+        // Then
+        assert_eq!(vec![0xF0, 0x77], beq.bytes());
     }
 }

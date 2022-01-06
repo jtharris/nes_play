@@ -29,7 +29,7 @@ impl Instruction for BVC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x50, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BVC $F6", bvc.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bvc = BVC::new(-0x06);
+
+        // Then
+        assert_eq!(vec![0x50, 0xFA], bvc.bytes());
     }
 }

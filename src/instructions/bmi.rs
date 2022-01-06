@@ -29,7 +29,7 @@ impl Instruction for BMI {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x30, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BMI $F6", bmi.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bmi = BMI::new(-0x0A);
+
+        // Then
+        assert_eq!(vec![0x30, 0xF6], bmi.bytes());
     }
 }

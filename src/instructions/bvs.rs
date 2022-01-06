@@ -29,7 +29,7 @@ impl Instruction for BVS {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x70, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BVS $D6", bvs.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bvw = BVS::new(0x6A);
+
+        // Then
+        assert_eq!(vec![0x70, 0x6A], bvw.bytes());
     }
 }

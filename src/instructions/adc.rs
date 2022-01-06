@@ -44,9 +44,9 @@ impl Instruction for ADC {
             AddressingMode::Immediate(val) => vec![0x69, val],
             AddressingMode::ZeroPage(addr) => vec![0x65, addr],
             AddressingMode::ZeroPageX(addr) => vec![0x75, addr],
-            AddressingMode::Absolute(addr) => vec![0x6D, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0x7D, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
-            AddressingMode::AbsoluteY(addr) => vec![0x79, addr.to_be_bytes()[0], addr.to_be_bytes()[1]],
+            AddressingMode::Absolute(addr) => vec![0x6D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0x7D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteY(addr) => vec![0x79, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
             AddressingMode::IndirectX(addr) => vec![0x61, addr],
             AddressingMode::IndirectY(addr) => vec![0x71, addr],
             _ => panic!("Addressing mode not allowed for ADC")
@@ -189,12 +189,12 @@ mod test {
     }
 
     #[test]
-    fn binary_representation() {
+    fn bytes_representation() {
         // Given
         let adc = ADC::new(Absolute(0xD8E1));
 
         // Then
-        assert_eq!(vec![0x6D, 0xD8, 0xE1], adc.bytes());
+        assert_eq!(vec![0x6D, 0xE1, 0xD8], adc.bytes());
     }
 
 }

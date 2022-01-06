@@ -29,18 +29,24 @@ impl Instruction for AND {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        //let mut byte_vec = vec![self.opcode];
-        //byte_vec.extend(self.mode.bytes());
-
-        //return byte_vec;
-        todo!("Not yet implemented")
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0x29, val],
+            AddressingMode::ZeroPage(addr) => vec![0x25, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x35, addr],
+            AddressingMode::Absolute(addr) => vec![0x2D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0x3D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteY(addr) => vec![0x39, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::IndirectX(addr) => vec![0x21, addr],
+            AddressingMode::IndirectY(addr) => vec![0x31, addr],
+            _ => panic!("Addressing mode not allowed for AND")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX};
     use crate::instructions::and::AND;
 
     #[test]
@@ -99,5 +105,14 @@ mod test {
 
         // Then
         assert_eq!("AND #$8C", and.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let and = AND::new(IndirectX(0x4D));
+
+        // Then
+        assert_eq!(vec![0x21, 0x4D], and.bytes());
     }
 }

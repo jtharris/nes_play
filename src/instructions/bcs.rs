@@ -29,7 +29,7 @@ impl Instruction for BCS {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xB0, self.relative as u8]
     }
 }
 
@@ -99,5 +99,14 @@ mod test {
 
         // Then
         assert_eq!("BCS $ED", bcs.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        // Given
+        let bsc = BCS::new(-0x17);
+
+        // Then
+        assert_eq!(vec![0xB0, 0xE9], bsc.bytes());
     }
 }
