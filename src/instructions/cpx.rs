@@ -30,13 +30,18 @@ impl Instruction for CPX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(value) => vec![0xE0, value],
+            AddressingMode::ZeroPage(addr) => vec![0xE4, addr],
+            AddressingMode::Absolute(addr) => vec![0xEC, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            _ => panic!("Addressing mode not allowed for CPX")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::cpu::{CPU, AddressingMode::ZeroPage, AddressingMode::Immediate, Instruction};
+    use crate::cpu::{CPU, AddressingMode::ZeroPage, AddressingMode::Immediate, Instruction, AddressingMode};
     use super::CPX;
 
     #[test]
@@ -104,5 +109,19 @@ mod test {
         let cpx = CPX::new(ZeroPage(0xC0));
 
         assert_eq!("CPX $C0", cpx.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let cpx = CPX::new(ZeroPage(0x0A));
+
+        assert_eq!(vec![0xE4, 0x0A], cpx.bytes());
+    }
+
+    #[test]
+    fn bytes_representation_absolute() {
+        let cpx = CPX::new(AddressingMode::Absolute(0xAB92));
+
+        assert_eq!(vec![0xEC, 0x92, 0xAB], cpx.bytes());
     }
 }

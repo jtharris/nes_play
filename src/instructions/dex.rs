@@ -22,7 +22,7 @@ impl Instruction for DEX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xCA]
     }
 }
 

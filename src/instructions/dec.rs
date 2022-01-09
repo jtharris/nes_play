@@ -30,14 +30,20 @@ impl Instruction for DEC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0xC6, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xD6, addr],
+            AddressingMode::Absolute(addr) => vec![0xCE, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0xDE, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            _ => panic!("Addressing mode not allowed for DEC")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageX};
+    use crate::cpu::AddressingMode::{Absolute, ZeroPage, ZeroPageX};
     use crate::instructions::dec::DEC;
 
     #[test]
@@ -105,5 +111,12 @@ mod test {
         let dec = DEC::new(ZeroPageX(0x8D));
 
         assert_eq!("DEC $8D,X", dec.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let dec = DEC::new(Absolute(0xFE01));
+
+        assert_eq!(vec![0xCE, 0x01, 0xFE], dec.bytes());
     }
 }

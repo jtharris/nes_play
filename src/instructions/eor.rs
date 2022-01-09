@@ -30,14 +30,24 @@ impl Instruction for EOR {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(value) => vec![0x49, value],
+            AddressingMode::ZeroPage(addr) => vec![0x45, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x55, addr],
+            AddressingMode::Absolute(addr) => vec![0x4D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0x5D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteY(addr) => vec![0x59, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::IndirectX(addr) => vec![0x41, addr],
+            AddressingMode::IndirectY(addr) => vec![0x51, addr],
+            _ => panic!("Addressing mode not allowed for EOR")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, AbsoluteY};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, AbsoluteX, AbsoluteY};
     use crate::instructions::eor::EOR;
 
     #[test]
@@ -94,5 +104,12 @@ mod test {
         let eor = EOR::new(AbsoluteY(0x02AA));
 
         assert_eq!("EOR $02AA,Y", eor.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let eor = EOR::new(AbsoluteX(0x02AA));
+
+        assert_eq!(vec![0x5D, 0xAA, 0x02], eor.bytes());
     }
 }

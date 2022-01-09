@@ -30,13 +30,19 @@ impl Instruction for CPY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(value) => vec![0xC0, value],
+            AddressingMode::ZeroPage(addr) => vec![0xC4, addr],
+            AddressingMode::Absolute(addr) => vec![0xCC, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            _ => panic!("Addressing mode not allowed for CPY")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, AddressingMode::Absolute, AddressingMode::Immediate, Instruction};
+    use crate::cpu::AddressingMode::ZeroPage;
     use super::CPY;
 
     #[test]
@@ -102,5 +108,12 @@ mod test {
         let cpy = CPY::new(Immediate(0xF9));
 
         assert_eq!("CPY #$F9", cpy.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let cpy = CPY::new(ZeroPage(0xAA));
+
+        assert_eq!(vec![0xC4, 0xAA], cpy.bytes());
     }
 }

@@ -22,7 +22,7 @@ impl Instruction for DEY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x88]
     }
 }
 

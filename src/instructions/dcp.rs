@@ -31,7 +31,16 @@ impl Instruction for DCP {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0xC7, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xD7, addr],
+            AddressingMode::Absolute(addr) => vec![0xCF, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteX(addr) => vec![0xDF, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::AbsoluteY(addr) => vec![0xDB, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::IndirectX(addr) => vec![0xC3, addr],
+            AddressingMode::IndirectY(addr) => vec![0xD3, addr],
+            _ => panic!("Addressing mode not allowed for DCP")
+        }
     }
 }
 
@@ -63,5 +72,12 @@ mod test {
         let dcp = DCP::new(IndirectX(0xAA));
 
         assert_eq!("*DCP ($AA,X)", dcp.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let dcp = DCP::new(AddressingMode::AbsoluteY(0xAABB));
+
+        assert_eq!(vec![0xDB, 0xBB, 0xAA], dcp.bytes());
     }
 }
