@@ -33,7 +33,15 @@ impl Instruction for LAX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0xA7, addr],
+            AddressingMode::ZeroPageY(addr) => vec![0xB7, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xAF, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xBF, addr),
+            AddressingMode::IndirectX(addr) => vec![0xA3, addr],
+            AddressingMode::IndirectY(addr) => vec![0xB3, addr],
+            _ => panic!("Addressing mode not allowed for LAX")
+        }
     }
 }
 
@@ -65,5 +73,12 @@ mod test {
         let lax = LAX::new(AddressingMode::IndirectY(0x55));
 
         assert_eq!("*LAX ($55),Y", lax.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let lax = LAX::new(AddressingMode::AbsoluteY(0x00AB));
+
+        assert_eq!(vec![0xBF, 0xAB, 0x00], lax.bytes());
     }
 }

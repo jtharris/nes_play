@@ -22,7 +22,7 @@ impl Instruction for INY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xC8]
     }
 }
 

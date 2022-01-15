@@ -29,14 +29,21 @@ impl Instruction for LDY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0xA0, val],
+            AddressingMode::ZeroPage(addr) => vec![0xA4, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xB4, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xAC, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xBC, addr),
+            _ => panic!("Addressing mode not allowed for LDY")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, ZeroPageX};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, ZeroPageX, AbsoluteX};
     use super::LDY;
 
     #[test]
@@ -86,5 +93,12 @@ mod test {
         let ldy = LDY::new(ZeroPageX(0xD2));
 
         assert_eq!("LDY $D2,X", ldy.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let ldy = LDY::new(AbsoluteX(0xFFEE));
+
+        assert_eq!(vec![0xBC, 0xEE, 0xFF], ldy.bytes());
     }
 }

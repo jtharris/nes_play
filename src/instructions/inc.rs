@@ -36,14 +36,20 @@ impl Instruction for INC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0xE6, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xF6, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xEE, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xFE, addr),
+            _ => panic!("Addressing mode not allowed for INC")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, ZeroPageX};
+    use crate::cpu::AddressingMode::{AbsoluteX, ZeroPage, ZeroPageX};
     use crate::instructions::inc::INC;
 
     #[test]
@@ -96,5 +102,12 @@ mod test {
         let inc = INC::new(ZeroPageX(0x81));
 
         assert_eq!("INC $81,X", inc.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let inc = INC::new(AbsoluteX(0xCC13));
+
+        assert_eq!(vec![0xFE, 0x13, 0xCC], inc.bytes())
     }
 }

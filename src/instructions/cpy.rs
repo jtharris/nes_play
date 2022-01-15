@@ -33,7 +33,7 @@ impl Instruction for CPY {
         match self.mode {
             AddressingMode::Immediate(value) => vec![0xC0, value],
             AddressingMode::ZeroPage(addr) => vec![0xC4, addr],
-            AddressingMode::Absolute(addr) => vec![0xCC, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xCC, addr),
             _ => panic!("Addressing mode not allowed for CPY")
         }
     }

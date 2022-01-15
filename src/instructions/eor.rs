@@ -34,9 +34,9 @@ impl Instruction for EOR {
             AddressingMode::Immediate(value) => vec![0x49, value],
             AddressingMode::ZeroPage(addr) => vec![0x45, addr],
             AddressingMode::ZeroPageX(addr) => vec![0x55, addr],
-            AddressingMode::Absolute(addr) => vec![0x4D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0x5D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteY(addr) => vec![0x59, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x4D, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x5D, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x59, addr),
             AddressingMode::IndirectX(addr) => vec![0x41, addr],
             AddressingMode::IndirectY(addr) => vec![0x51, addr],
             _ => panic!("Addressing mode not allowed for EOR")

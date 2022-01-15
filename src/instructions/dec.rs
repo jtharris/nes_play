@@ -33,8 +33,8 @@ impl Instruction for DEC {
         match self.mode {
             AddressingMode::ZeroPage(addr) => vec![0xC6, addr],
             AddressingMode::ZeroPageX(addr) => vec![0xD6, addr],
-            AddressingMode::Absolute(addr) => vec![0xCE, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0xDE, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xCE, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xDE, addr),
             _ => panic!("Addressing mode not allowed for DEC")
         }
     }

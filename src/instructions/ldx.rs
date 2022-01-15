@@ -29,7 +29,14 @@ impl Instruction for LDX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0xA2, val],
+            AddressingMode::ZeroPage(addr) => vec![0xA6, addr],
+            AddressingMode::ZeroPageY(addr) => vec![0xB6, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xAE, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xBE, addr),
+            _ => panic!("Addressing mode not allowed for LDX")
+        }
     }
 }
 
@@ -86,5 +93,12 @@ mod test {
         let ldx = LDX::new(AbsoluteY(0x4400));
 
         assert_eq!("LDX $4400,Y", ldx.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let ldx = LDX::new(Immediate(0xFD));
+
+        assert_eq!(vec![0xA2, 0xFD], ldx.bytes());
     }
 }

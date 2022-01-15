@@ -29,14 +29,24 @@ impl Instruction for LDA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0xA9, val],
+            AddressingMode::ZeroPage(addr) => vec![0xA5, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xB5, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xAD, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xBD, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xB9, addr),
+            AddressingMode::IndirectX(addr) => vec![0xA1, addr],
+            AddressingMode::IndirectY(addr) => vec![0xB1, addr],
+            _ => panic!("Addressing mode not allowed for LDA")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX, IndirectY, Absolute};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX, IndirectY, Absolute, AbsoluteX};
     use super::LDA;
 
     #[test]
@@ -107,5 +117,12 @@ mod test {
         let lda = LDA::new(IndirectX(0x4D));
 
         assert_eq!("LDA ($4D,X)", lda.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let lda = LDA::new(AbsoluteX(0xB280));
+
+        assert_eq!(vec![0xBD, 0x80, 0xB2], lda.bytes());
     }
 }

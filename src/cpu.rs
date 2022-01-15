@@ -271,6 +271,12 @@ impl fmt::Display for AddressingMode {
 pub trait Instruction: fmt::Display {
     fn execute(&self, cpu: &mut CPU) -> u8;
     fn bytes(&self) -> Vec<u8>;
+
+    // Helper for 3-byte instructions with opcode and 16bit address
+    fn bytes_for_opcode(&self, opcode: u8, address: u16) -> Vec<u8> {
+        let addr_bytes = address.to_le_bytes();
+        vec![opcode, addr_bytes[0], addr_bytes[1]]
+    }
 }
 
 

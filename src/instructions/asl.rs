@@ -36,8 +36,8 @@ impl Instruction for ASL {
             AddressingMode::Accumulator => vec![0x0A],
             AddressingMode::ZeroPage(addr) => vec![0x06, addr],
             AddressingMode::ZeroPageX(addr) => vec![0x16, addr],
-            AddressingMode::Absolute(addr) => vec![0x0E, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0x1E, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x0E, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x1E, addr),
             _ => panic!("Addressing mode not allowed for ASL")
         }
     }

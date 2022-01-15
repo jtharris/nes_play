@@ -33,7 +33,7 @@ impl Instruction for CPX {
         match self.mode {
             AddressingMode::Immediate(value) => vec![0xE0, value],
             AddressingMode::ZeroPage(addr) => vec![0xE4, addr],
-            AddressingMode::Absolute(addr) => vec![0xEC, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xEC, addr),
             _ => panic!("Addressing mode not allowed for CPX")
         }
     }

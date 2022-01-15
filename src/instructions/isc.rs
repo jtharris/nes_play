@@ -48,7 +48,16 @@ impl Instruction for ISC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0xE7, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xF7, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xEF, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xFF, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xFB, addr),
+            AddressingMode::IndirectX(addr) => vec![0xE3, addr],
+            AddressingMode::IndirectY(addr) => vec![0xF3, addr],
+            _ => panic!("Addressing mode not allowed for ISC")
+        }
     }
 }
 
@@ -80,5 +89,12 @@ mod test {
         let isc = ISC::new(AddressingMode::ZeroPageX(0xFA));
 
         assert_eq!("*ISC $FA,X", isc.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let isc = ISC::new(AddressingMode::IndirectX(0xD2));
+
+        assert_eq!(vec![0xE3, 0xD2], isc.bytes());
     }
 }

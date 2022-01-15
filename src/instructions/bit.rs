@@ -32,7 +32,7 @@ impl Instruction for BIT {
     fn bytes(&self) -> Vec<u8> {
         match self.mode {
             AddressingMode::ZeroPage(addr) => vec![0x24, addr],
-            AddressingMode::Absolute(addr) => vec![0x2C, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x2C, addr),
             _ => panic!("Addressing Mode not allowed for BIT!")
         }
     }

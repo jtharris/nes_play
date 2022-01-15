@@ -22,7 +22,7 @@ impl Instruction for INX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xE8]
     }
 }
 

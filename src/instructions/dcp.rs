@@ -34,9 +34,9 @@ impl Instruction for DCP {
         match self.mode {
             AddressingMode::ZeroPage(addr) => vec![0xC7, addr],
             AddressingMode::ZeroPageX(addr) => vec![0xD7, addr],
-            AddressingMode::Absolute(addr) => vec![0xCF, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0xDF, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteY(addr) => vec![0xDB, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xCF, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xDF, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xDB, addr),
             AddressingMode::IndirectX(addr) => vec![0xC3, addr],
             AddressingMode::IndirectY(addr) => vec![0xD3, addr],
             _ => panic!("Addressing mode not allowed for DCP")

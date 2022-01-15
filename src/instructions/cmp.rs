@@ -30,14 +30,25 @@ impl Instruction for CMP {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0xC9, val],
+            AddressingMode::ZeroPage(addr) => vec![0xC5, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xD5, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xCD, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xDD, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xD9, addr),
+            AddressingMode::IndirectX(addr) => vec![0xC1, addr],
+            AddressingMode::IndirectY(addr) => vec![0xD1, addr],
+            _ => panic!("Addressing mode not allowed for CMP")
+        }
+
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, AddressingMode::AbsoluteX, AddressingMode::Immediate, Instruction};
-    use crate::cpu::AddressingMode::Absolute;
+    use crate::cpu::AddressingMode::{Absolute, AbsoluteY};
     use super::CMP;
 
     #[test]
@@ -115,5 +126,12 @@ mod test {
         let cmp = CMP::new(Absolute(0x0A1E));
 
         assert_eq!("CMP $0A1E", cmp.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let cmp = CMP::new(AbsoluteY(0x0AAE));
+
+        assert_eq!(vec![0xD9, 0xAE, 0x0A], cmp.bytes());
     }
 }

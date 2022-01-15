@@ -61,7 +61,10 @@ impl Instruction for JMP {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            JumpAddressMode::Absolute(addr) => self.bytes_for_opcode(0x4C, addr),
+            JumpAddressMode::Indirect(addr) => self.bytes_for_opcode(0x6C, addr),
+        }
     }
 }
 
@@ -117,13 +120,20 @@ mod test {
     fn string_representation_absolute() {
         let jmp = JMP::new(Absolute(0x5597));
 
-        assert_eq!("JMP $5597", jmp.to_string())
+        assert_eq!("JMP $5597", jmp.to_string());
     }
 
     #[test]
     fn string_representation_indirect() {
         let jmp = JMP::new(Indirect(0x5597));
 
-        assert_eq!("JMP ($5597)", jmp.to_string())
+        assert_eq!("JMP ($5597)", jmp.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let jmp = JMP::new(Absolute(0xD08A));
+
+        assert_eq!(vec![0x4C, 0x8A, 0xD0], jmp.bytes());
     }
 }

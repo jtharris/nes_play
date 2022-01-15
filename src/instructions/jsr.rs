@@ -31,7 +31,7 @@ impl Instruction for JSR {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        self.bytes_for_opcode(0x20, self.target)
     }
 }
 
@@ -60,5 +60,12 @@ mod test {
         let jsr = JSR::new(0x5597);
 
         assert_eq!("JSR $5597", jsr.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let jsr = JSR::new(0xF28E);
+
+        assert_eq!(vec![0x20, 0x8E, 0xF2], jsr.bytes());
     }
 }

@@ -44,9 +44,9 @@ impl Instruction for ADC {
             AddressingMode::Immediate(val) => vec![0x69, val],
             AddressingMode::ZeroPage(addr) => vec![0x65, addr],
             AddressingMode::ZeroPageX(addr) => vec![0x75, addr],
-            AddressingMode::Absolute(addr) => vec![0x6D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0x7D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteY(addr) => vec![0x79, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x6D, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x7D, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x79, addr),
             AddressingMode::IndirectX(addr) => vec![0x61, addr],
             AddressingMode::IndirectY(addr) => vec![0x71, addr],
             _ => panic!("Addressing mode not allowed for ADC")

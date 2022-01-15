@@ -33,9 +33,9 @@ impl Instruction for AND {
             AddressingMode::Immediate(val) => vec![0x29, val],
             AddressingMode::ZeroPage(addr) => vec![0x25, addr],
             AddressingMode::ZeroPageX(addr) => vec![0x35, addr],
-            AddressingMode::Absolute(addr) => vec![0x2D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteX(addr) => vec![0x3D, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
-            AddressingMode::AbsoluteY(addr) => vec![0x39, addr.to_le_bytes()[0], addr.to_le_bytes()[1]],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x2D, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x3D, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x39, addr),
             AddressingMode::IndirectX(addr) => vec![0x21, addr],
             AddressingMode::IndirectY(addr) => vec![0x31, addr],
             _ => panic!("Addressing mode not allowed for AND")
