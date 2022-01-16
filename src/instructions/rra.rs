@@ -47,7 +47,16 @@ impl Instruction for RRA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x67, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x77, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x6F, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x7F, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x7B, addr),
+            AddressingMode::IndirectX(addr) => vec![0x63, addr],
+            AddressingMode::IndirectY(addr) => vec![0x73, addr],
+            _ => panic!("Addressing mode not allowed for RRA")
+        }
     }
 }
 
@@ -82,5 +91,12 @@ mod test {
         let rra = RRA::new(AddressingMode::ZeroPageY(0xA6));
 
         assert_eq!("*RRA $A6,Y", rra.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let rra = RRA::new(AddressingMode::IndirectX(0xFD));
+
+        assert_eq!(vec![0x63, 0xFD], rra.bytes());
     }
 }

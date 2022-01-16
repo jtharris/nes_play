@@ -18,7 +18,7 @@ impl Instruction for SED {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xF8]
     }
 }
 

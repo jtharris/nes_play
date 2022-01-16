@@ -26,7 +26,12 @@ impl Instruction for STX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x86, addr],
+            AddressingMode::ZeroPageY(addr) => vec![0x96, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x8E, addr),
+            _ => panic!("Addressing mode not allowed for STX")
+        }
     }
 }
 
@@ -54,5 +59,12 @@ mod test {
         let stx = STX::new(ZeroPageY(0x44));
 
         assert_eq!("STX $44,Y", stx.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let stx = STX::new(ZeroPageY(0x8A));
+
+        assert_eq!(vec![0x96, 0x8A], stx.bytes());
     }
 }

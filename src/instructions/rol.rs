@@ -37,7 +37,14 @@ impl Instruction for ROL {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Accumulator => vec![0x2A],
+            AddressingMode::ZeroPage(addr) => vec![0x26, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x36, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x2E, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x3E, addr),
+            _ => panic!("Addressing mode not allowed for ROL")
+        }
     }
 }
 
@@ -98,5 +105,12 @@ mod test {
         let rol = ROL::new(Accumulator);
 
         assert_eq!("ROL A", rol.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let rol = ROL::new(ZeroPage(0xCA));
+
+        assert_eq!(vec![0x26, 0xCA], rol.bytes());
     }
 }

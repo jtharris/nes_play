@@ -21,7 +21,7 @@ impl Instruction for TAY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xA8]
     }
 }
 

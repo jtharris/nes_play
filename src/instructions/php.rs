@@ -20,7 +20,7 @@ impl Instruction for PHP {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x08]
     }
 }
 

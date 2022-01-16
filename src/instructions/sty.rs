@@ -26,7 +26,12 @@ impl Instruction for STY {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x84, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x94, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x8C, addr),
+            _ => panic!("Addressing mode not allowed for STY")
+        }
     }
 }
 
@@ -54,5 +59,12 @@ mod test {
         let sty = STY::new(ZeroPageX(0xF1));
 
         assert_eq!("STY $F1,X", sty.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let sty = STY::new(ZeroPage(0xFE));
+
+        assert_eq!(vec![0x84, 0xFE], sty.bytes());
     }
 }

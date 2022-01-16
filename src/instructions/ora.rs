@@ -29,7 +29,17 @@ impl Instruction for ORA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0x09, val],
+            AddressingMode::ZeroPage(addr) => vec![0x05, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x15, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x0D, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x1D, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x19, addr),
+            AddressingMode::IndirectX(addr) => vec![0x01, addr],
+            AddressingMode::IndirectY(addr) => vec![0x11, addr],
+            _ => panic!("Addressing mode not allowed for ORA")
+        }
     }
 }
 
@@ -37,7 +47,7 @@ impl Instruction for ORA {
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectY};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectY, AbsoluteY};
     use crate::instructions::ora::ORA;
 
     #[test]
@@ -94,5 +104,12 @@ mod test {
         let ora = ORA::new(IndirectY(0xB2));
 
         assert_eq!("ORA ($B2),Y", ora.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let ora = ORA::new(AbsoluteY(0xBBF8));
+
+        assert_eq!(vec![0x19, 0xF8, 0xBB], ora.bytes());
     }
 }

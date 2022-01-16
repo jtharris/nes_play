@@ -21,7 +21,7 @@ impl Instruction for TXA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x8A]
     }
 }
 

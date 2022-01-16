@@ -34,7 +34,16 @@ impl Instruction for SLO {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x07, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x17, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x0F, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x1F, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x1B, addr),
+            AddressingMode::IndirectX(addr) => vec![0x03, addr],
+            AddressingMode::IndirectY(addr) => vec![0x13, addr],
+            _ => panic!("Addressing mode not allowed for SLO")
+        }
     }
 }
 
@@ -89,5 +98,12 @@ mod test {
         let slo = SLO::new(AddressingMode::ZeroPageY(0xFB));
 
         assert_eq!("*SLO $FB,Y", slo.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let slo = SLO::new(AddressingMode::ZeroPageX(0xAA));
+
+        assert_eq!(vec![0x17, 0xAA], slo.bytes());
     }
 }

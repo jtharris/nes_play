@@ -34,7 +34,14 @@ impl Instruction for LSR {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Accumulator => vec![0x4A],
+            AddressingMode::ZeroPage(addr) => vec![0x46, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x56, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x4E, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x5E, addr),
+            _ => panic!("Addressing mode not allowed for LSR")
+        }
     }
 }
 
@@ -42,7 +49,7 @@ impl Instruction for LSR {
 mod test {
     use crate::cpu::{CPU, Instruction};
     use crate::instructions::lsr::LSR;
-    use crate::cpu::AddressingMode::{Absolute, Accumulator, ZeroPage};
+    use crate::cpu::AddressingMode::{Absolute, Accumulator, ZeroPage, ZeroPageX};
 
     #[test]
     fn shift_with_no_flags_acc() {
@@ -92,5 +99,12 @@ mod test {
         let lsr = LSR::new(Absolute(0x0A44));
 
         assert_eq!("LSR $0A44", lsr.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let lsr = LSR::new(ZeroPageX(0xAF));
+
+        assert_eq!(vec![0x56, 0xAF], lsr.bytes());
     }
 }

@@ -39,7 +39,16 @@ impl Instruction for RLA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x27, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x37, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x2F, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x3F, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x3B, addr),
+            AddressingMode::IndirectX(addr) => vec![0x23, addr],
+            AddressingMode::IndirectY(addr) => vec![0x33, addr],
+            _ => panic!("Addressing mode not allowed for RLA")
+        }
     }
 }
 
@@ -71,5 +80,12 @@ mod test {
         let rla = RLA::new(AddressingMode::AbsoluteX(0x8AF3));
 
         assert_eq!("*RLA $8AF3,X", rla.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let rla = RLA::new(AddressingMode::AbsoluteY(0x8AF3));
+
+        assert_eq!(vec![0x3B, 0xF3, 0x8A], rla.bytes());
     }
 }

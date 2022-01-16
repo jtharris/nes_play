@@ -35,7 +35,16 @@ impl Instruction for STA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x85, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x95, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x8D, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x9D, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x99, addr),
+            AddressingMode::IndirectX(addr) => vec![0x81, addr],
+            AddressingMode::IndirectY(addr) => vec![0x91, addr],
+            _ => panic!("Addressing mode not allowed for STA")
+        }
     }
 }
 
@@ -76,5 +85,12 @@ mod test {
         let sta = STA::new(IndirectY(0x0C));
 
         assert_eq!("STA ($0C),Y", sta.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let sta = STA::new(Absolute(0x0245));
+
+        assert_eq!(vec![0x8D, 0x45, 0x02], sta.bytes());
     }
 }

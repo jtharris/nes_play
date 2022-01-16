@@ -21,7 +21,7 @@ impl Instruction for PLP {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x28]
     }
 }
 

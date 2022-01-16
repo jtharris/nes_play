@@ -26,7 +26,13 @@ impl Instruction for SAX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x87, addr],
+            AddressingMode::ZeroPageY(addr) => vec![0x97, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x8F, addr),
+            AddressingMode::IndirectX(addr) => vec![0x83, addr],
+            _ => panic!("Addressing mode not allowed for SAX")
+        }
     }
 }
 
@@ -55,5 +61,12 @@ mod test {
         let sax = SAX::new(ZeroPageY(0xFF));
 
         assert_eq!("*SAX $FF,Y", sax.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let sax = SAX::new(ZeroPageY(0xDF));
+
+        assert_eq!(vec![0x97, 0xDF], sax.bytes());
     }
 }

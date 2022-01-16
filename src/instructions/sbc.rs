@@ -44,14 +44,24 @@ impl Instruction for SBC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Immediate(val) => vec![0xE9, val],
+            AddressingMode::ZeroPage(addr) => vec![0xE5, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0xF5, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xED, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xFD, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xF9, addr),
+            AddressingMode::IndirectX(addr) => vec![0xE1, addr],
+            AddressingMode::IndirectY(addr) => vec![0xF1, addr],
+            _ => panic!("Addressing mode not allowed for SBC")
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::cpu::{CPU, Instruction, StatusFlag};
-    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX};
+    use crate::cpu::AddressingMode::{ZeroPage, Immediate, IndirectX, AbsoluteY};
     use super::SBC;
 
     #[test]
@@ -170,6 +180,13 @@ mod test {
         let sbc = SBC::new(IndirectX(0x6B));
 
         assert_eq!("SBC ($6B,X)", sbc.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let sbc = SBC::new(AbsoluteY(0xBC12));
+
+        assert_eq!(vec![0xF9, 0x12, 0xBC], sbc.bytes());
     }
 
 }

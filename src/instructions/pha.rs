@@ -18,7 +18,7 @@ impl Instruction for PHA {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x48]
     }
 }
 

@@ -18,7 +18,7 @@ impl Instruction for SEC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0x38]
     }
 }
 

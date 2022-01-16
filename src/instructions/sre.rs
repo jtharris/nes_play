@@ -36,7 +36,16 @@ impl Instruction for SRE {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::ZeroPage(addr) => vec![0x47, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x57, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x4F, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x5F, addr),
+            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0x5B, addr),
+            AddressingMode::IndirectX(addr) => vec![0x43, addr],
+            AddressingMode::IndirectY(addr) => vec![0x53, addr],
+            _ => panic!("Addressing mode not allowed for SRE")
+        }
     }
 }
 
@@ -71,5 +80,12 @@ mod test {
         let sre = SRE::new(AddressingMode::ZeroPage(0xF1));
 
         assert_eq!("*SRE $F1", sre.to_string());
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let sre = SRE::new(AddressingMode::AbsoluteX(0x88AC));
+
+        assert_eq!(vec![0x5F, 0xAC, 0x88], sre.bytes());
     }
 }

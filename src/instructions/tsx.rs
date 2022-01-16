@@ -21,7 +21,7 @@ impl Instruction for TSX {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        vec![0xBA]
     }
 }
 

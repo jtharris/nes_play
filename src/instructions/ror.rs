@@ -37,7 +37,14 @@ impl Instruction for ROR {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        todo!()
+        match self.mode {
+            AddressingMode::Accumulator => vec![0x6A],
+            AddressingMode::ZeroPage(addr) => vec![0x66, addr],
+            AddressingMode::ZeroPageX(addr) => vec![0x76, addr],
+            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0x6E, addr),
+            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0x7E, addr),
+            _ => panic!("Addressing mode not allowed for ROR")
+        }
     }
 }
 
@@ -98,5 +105,12 @@ mod test {
         let ror = ROR::new(AbsoluteX(0x05F0));
 
         assert_eq!("ROR $05F0,X", ror.to_string())
+    }
+
+    #[test]
+    fn bytes_representation() {
+        let ror = ROR::new(AbsoluteX(0x99BC));
+
+        assert_eq!(vec![0x7E, 0xBC, 0x99], ror.bytes());
     }
 }
