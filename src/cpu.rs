@@ -180,8 +180,12 @@ impl CPU {
             let pc = self.program_counter;
             let instruction = generate_instruction(self);
 
-            write!(log, "{:04X} ", pc);
-            write!(log, "         ");    // TODO:  Fill in bytes later
+            write!(log, "{:04X}  ", pc);
+            match &instruction {
+                Some(inst) => write!(log, "{:<8}  ", inst.bytes_string()),
+                None => write!(log, "        ")
+            };
+
             match &instruction {
                 Some(inst) => write!(log, "{:<25}", inst.to_string()),
                 None => write!(log, "{:<25}", "No Instruction")
@@ -276,6 +280,14 @@ pub trait Instruction: fmt::Display {
     fn bytes_for_opcode(&self, opcode: u8, address: u16) -> Vec<u8> {
         let addr_bytes = address.to_le_bytes();
         vec![opcode, addr_bytes[0], addr_bytes[1]]
+    }
+
+    fn bytes_string(&self) -> String {
+        self.bytes()
+            .iter()
+            .map(|b| format!("{:02X}", b))
+            .collect::<Vec<String>>()
+            .join(" ")
     }
 }
 
