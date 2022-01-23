@@ -56,6 +56,10 @@ impl Instruction for SBC {
             _ => panic!("Addressing mode not allowed for SBC")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("SBC {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

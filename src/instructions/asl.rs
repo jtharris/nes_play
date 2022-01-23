@@ -41,6 +41,10 @@ impl Instruction for ASL {
             _ => panic!("Addressing mode not allowed for ASL")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("ASL {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

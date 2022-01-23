@@ -53,7 +53,7 @@ impl CPU {
     //  * www.obelisk.me.uk/6502/addressing.html
     //  * http://wiki.nesdev.com/w/index.php/CPU_addressing_modes
     //  * https://skilldrick.github.io/easy6502/#addressing
-    fn mem_address(&self, mode: &AddressingMode) -> u16 {
+    pub fn mem_address(&self, mode: &AddressingMode) -> u16 {
         match mode {
             &AddressingMode::Absolute(address) => address,
             &AddressingMode::AbsoluteX(base) => {
@@ -187,13 +187,13 @@ impl CPU {
             };
 
             match &instruction {
-                Some(inst) => write!(log, "{:<25}", inst.to_string()),
+                Some(inst) => write!(log, "{:<32}", inst.debug_string(&self)),
                 None => write!(log, "{:<25}", "No Instruction")
             };
             write!(log, "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} ",
                    self.accumulator, self.index_register_x, self.index_register_y,
                    self.processor_status, self.stack_pointer);
-            write!(log, "PPU:  0, 0 ");  // TODO:  Figure this out too
+            //write!(log, "PPU:  0, 0 ");  // TODO:  Figure this out too
 
             match &instruction {
                 Some(inst) => {
@@ -203,7 +203,8 @@ impl CPU {
                 None => return
             };
 
-            writeln!(log, "CYC:{}", cycle);
+            //writeln!(log, "CYC:{}", cycle);
+            writeln!(log);
         }
     }
 }
@@ -267,6 +268,41 @@ impl fmt::Display for AddressingMode {
     }
 }
 
+impl AddressingMode {
+    pub fn debug_string(&self, cpu: &CPU) -> String {
+        match self {
+            AddressingMode::Absolute(_) => format!("{} = {:02X}", self, cpu.read(self)),
+            AddressingMode::ZeroPage(_) => format!("{} = {:02X}", self, cpu.read(self)),
+            AddressingMode::ZeroPageX(_) => {
+                format!("{} @ {:02X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
+            },
+            AddressingMode::ZeroPageY(_) => {
+                format!("{} @ {:02X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
+            },
+            AddressingMode::AbsoluteX(_) => {
+                format!("{} @ {:04X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
+            },
+            AddressingMode::AbsoluteY(_) => {
+                format!("{} @ {:04X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
+            },
+            AddressingMode::IndirectX(base) => {
+                let initial = base.wrapping_add(cpu.index_register_x);
+                format!("{} @ {:02X} = {:04X} = {:02X}", self, initial, cpu.mem_address(self) ,cpu.read(self))
+            },
+            &AddressingMode::IndirectY(address) => {
+                let bytes = [
+                    cpu.bus.read_mem8(address as u16),
+                    cpu.bus.read_mem8(address.wrapping_add(1) as u16)
+                ];
+                let initial = u16::from_le_bytes(bytes);
+
+                format!("{} = {:04X} @ {:04X} = {:02X}", self, initial, cpu.mem_address(self) ,cpu.read(self))
+            }
+            _ => self.to_string()
+        }
+    }
+}
+
 
 // Instructions are implemented as a visitor pattern, each being executable on
 // a given CPU reference
@@ -288,6 +324,10 @@ pub trait Instruction: fmt::Display {
             .map(|b| format!("{:02X}", b))
             .collect::<Vec<String>>()
             .join(" ")
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        self.to_string()
     }
 }
 

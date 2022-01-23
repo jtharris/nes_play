@@ -36,6 +36,10 @@ impl Instruction for BIT {
             _ => panic!("Addressing Mode not allowed for BIT!")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("BIT {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

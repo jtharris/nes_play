@@ -38,6 +38,10 @@ impl Instruction for LDX {
             _ => panic!("Addressing mode not allowed for LDX")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("LDX {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

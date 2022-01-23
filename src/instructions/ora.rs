@@ -41,6 +41,10 @@ impl Instruction for ORA {
             _ => panic!("Addressing mode not allowed for ORA")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("ORA {}", self.mode.debug_string(&cpu))
+    }
 }
 
 

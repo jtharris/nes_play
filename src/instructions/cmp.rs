@@ -43,6 +43,10 @@ impl Instruction for CMP {
         }
 
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("CMP {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

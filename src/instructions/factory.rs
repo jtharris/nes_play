@@ -36,7 +36,7 @@ use crate::instructions::lda::LDA;
 use crate::instructions::ldx::LDX;
 use crate::instructions::ldy::LDY;
 use crate::instructions::lsr::LSR;
-use crate::instructions::nop::NOP;
+use crate::instructions::nop::{NOP, IllegalNOP};
 use crate::instructions::ora::ORA;
 use crate::instructions::pha::PHA;
 use crate::instructions::php::PHP;
@@ -65,32 +65,6 @@ use crate::instructions::txa::TXA;
 use crate::instructions::txs::TXS;
 use crate::instructions::tya::TYA;
 
-struct Unknown {
-    opcode: u8
-}
-
-impl Unknown {
-    pub fn new (opcode: u8) -> Self {
-        Unknown { opcode }
-    }
-}
-
-impl Display for Unknown {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "*NOP ${:02X}", self.opcode)
-    }
-}
-
-impl Instruction for Unknown {
-    fn execute(&self, _: &mut CPU) -> u8 {
-        // do nothing sentence
-        3
-    }
-
-    fn bytes(&self) -> Vec<u8> {
-        vec![]
-    }
-}
 
 pub fn generate_instruction(cpu: &mut CPU) -> Option<Box<dyn Instruction>> {
     let opcode = cpu.read(&Absolute(cpu.program_counter));
@@ -121,11 +95,10 @@ fn instruction_size(opcode: u8) -> u8 {
         (_, 4, _) => 2,
         (_, 5, _) => 2,
         (_, 7, _) => 3,
+        (0, 0, 0) => 1,
         (1, 0, 0) => 3,
-        (5, 0, 0) => 2,
-        (6, 0, 0) => 2,
-        (7, 0, 0) => 2,
-        (_, 0, 0) => 1,
+        (2, 0, 0) => 1,
+        (3, 0, 0) => 1,
         (_, 0, _) => 2,
         (_, 2, 1) => 2,
         (_, 2, 3) => 2,
@@ -167,7 +140,7 @@ fn generate_1byte_instruction(opcode: u8) -> Box<dyn Instruction> {
         0x68 => Box::new(PLA{}),
         0x08 => Box::new(PHP{}),
         0x28 => Box::new(PLP{}),
-        _ => Box::new(Unknown::new(opcode))
+        _ => Box::new(IllegalNOP::new(opcode, None))
     }
 }
 
@@ -279,8 +252,10 @@ fn generate_2byte_instruction(opcode: u8, arg: u8) -> Box<dyn Instruction> {
         0x77 => Box::new(RRA::new(ZeroPageX(arg))),
         0x63 => Box::new(RRA::new(IndirectX(arg))),
         0x73 => Box::new(RRA::new(IndirectY(arg))),
-
-        _ => Box::new(Unknown::new(opcode))
+        0x80 | 0x82 | 0x89 | 0xC2 | 0xE2 => Box::new(IllegalNOP::new(opcode, Some(Immediate(arg)))),
+        0x04 | 0x44 | 0x64 => Box::new(IllegalNOP::new(opcode, Some(ZeroPage(arg)))),
+        0x14 | 0x34 | 0x54 | 0x74 | 0xD4 | 0xF4 => Box::new(IllegalNOP::new(opcode, Some(ZeroPageX(arg)))),
+        _ => panic!("Unknown opcode:  {:02X}", opcode)
     }
 }
 
@@ -355,7 +330,8 @@ fn generate_3byte_instruction(opcode: u8, arg: u16) -> Box<dyn Instruction> {
         0x6F => Box::new(RRA::new(Absolute(arg))),
         0x7F => Box::new(RRA::new(AbsoluteX(arg))),
         0x7B => Box::new(RRA::new(AbsoluteY(arg))),
-
-        _ => Box::new(Unknown::new(opcode))
+        0x0C => Box::new(IllegalNOP::new(0x0C, Some(Absolute(arg)))),
+        0x1C | 0x3C | 0x5C | 0x7C | 0xDC | 0xFC => Box::new(IllegalNOP::new(opcode, Some(AbsoluteX(arg)))),
+        _ => panic!("Unknown opcode: {:02X}", opcode)
     }
 }

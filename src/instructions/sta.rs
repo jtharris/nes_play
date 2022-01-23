@@ -46,6 +46,10 @@ impl Instruction for STA {
             _ => panic!("Addressing mode not allowed for STA")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("STA {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

@@ -41,6 +41,10 @@ impl Instruction for LDA {
             _ => panic!("Addressing mode not allowed for LDA")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("LDA {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

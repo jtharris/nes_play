@@ -43,6 +43,10 @@ impl Instruction for LAX {
             _ => panic!("Addressing mode not allowed for LAX")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("*LAX {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

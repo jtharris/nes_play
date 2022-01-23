@@ -46,6 +46,10 @@ impl Instruction for ROR {
             _ => panic!("Addressing mode not allowed for ROR")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("ROR {}", self.mode.debug_string(&cpu))
+    }
 }
 
 

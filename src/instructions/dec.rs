@@ -38,6 +38,10 @@ impl Instruction for DEC {
             _ => panic!("Addressing mode not allowed for DEC")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("DEC {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

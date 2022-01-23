@@ -33,6 +33,10 @@ impl Instruction for STX {
             _ => panic!("Addressing mode not allowed for STX")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("STX {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

@@ -33,6 +33,10 @@ impl Instruction for STY {
             _ => panic!("Addressing mode not allowed for STY")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("STY {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

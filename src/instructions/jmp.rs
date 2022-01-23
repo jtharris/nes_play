@@ -25,17 +25,9 @@ impl JMP {
     pub fn new(mode: JumpAddressMode) -> Self {
         JMP{ mode }
     }
-}
 
-impl Display for JMP {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "JMP {}", self.mode)
-    }
-}
-
-impl Instruction for JMP {
-    fn execute(&self, cpu: &mut CPU) -> u8 {
-        cpu.program_counter = match self.mode {
+    fn target_address(&self, cpu: &CPU) -> u16 {
+        match self.mode {
             JumpAddressMode::Absolute(target) => target,
             JumpAddressMode::Indirect(address) => {
                 // See here for explanation:
@@ -52,7 +44,20 @@ impl Instruction for JMP {
                 ];
                 u16::from_le_bytes(bytes)
             }
-        };
+        }
+    }
+}
+
+impl Display for JMP {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "JMP {}", self.mode)
+    }
+}
+
+impl Instruction for JMP {
+
+    fn execute(&self, cpu: &mut CPU) -> u8 {
+        cpu.program_counter = self.target_address(&cpu);
 
         match self.mode {
             JumpAddressMode::Absolute(_) => 3,
@@ -64,6 +69,13 @@ impl Instruction for JMP {
         match self.mode {
             JumpAddressMode::Absolute(addr) => self.bytes_for_opcode(0x4C, addr),
             JumpAddressMode::Indirect(addr) => self.bytes_for_opcode(0x6C, addr),
+        }
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        match self.mode {
+            JumpAddressMode::Absolute(_) => self.to_string(),
+            JumpAddressMode::Indirect(addr) => format!("JMP (${:04X}) = {:04X}", addr, self.target_address(&cpu))
         }
     }
 }

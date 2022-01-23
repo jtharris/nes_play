@@ -43,6 +43,10 @@ impl Instruction for LSR {
             _ => panic!("Addressing mode not allowed for LSR")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("LSR {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

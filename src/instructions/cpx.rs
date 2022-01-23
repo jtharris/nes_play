@@ -37,6 +37,10 @@ impl Instruction for CPX {
             _ => panic!("Addressing mode not allowed for CPX")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("CPX {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

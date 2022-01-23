@@ -42,6 +42,10 @@ impl Instruction for EOR {
             _ => panic!("Addressing mode not allowed for EOR")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("EOR {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

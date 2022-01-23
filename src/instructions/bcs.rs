@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, format, Formatter};
 use crate::cpu::{Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#BCS
@@ -30,6 +30,11 @@ impl Instruction for BCS {
 
     fn bytes(&self) -> Vec<u8> {
         vec![0xB0, self.relative as u8]
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        let new_pc = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
+        format!("BCS ${:04X}", new_pc)
     }
 }
 

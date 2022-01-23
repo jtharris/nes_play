@@ -52,6 +52,10 @@ impl Instruction for ADC {
             _ => panic!("Addressing mode not allowed for ADC")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("ADC {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

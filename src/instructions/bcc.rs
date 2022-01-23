@@ -31,6 +31,11 @@ impl Instruction for BCC {
     fn bytes(&self) -> Vec<u8> {
         vec![0x90, self.relative as u8]
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        let new_pc = ((cpu.program_counter as i16) + (self.relative as i16)) as u16;
+        format!("BCC ${:04X}", new_pc)
+    }
 }
 
 #[cfg(test)]

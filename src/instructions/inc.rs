@@ -44,6 +44,10 @@ impl Instruction for INC {
             _ => panic!("Addressing mode not allowed for INC")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("INC {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

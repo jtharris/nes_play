@@ -38,6 +38,10 @@ impl Instruction for LDY {
             _ => panic!("Addressing mode not allowed for LDY")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("LDY {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

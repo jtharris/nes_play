@@ -41,6 +41,10 @@ impl Instruction for AND {
             _ => panic!("Addressing mode not allowed for AND")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("AND {}", self.mode.debug_string(&cpu))
+    }
 }
 
 #[cfg(test)]

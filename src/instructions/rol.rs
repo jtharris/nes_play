@@ -46,6 +46,10 @@ impl Instruction for ROL {
             _ => panic!("Addressing mode not allowed for ROL")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("ROL {}", self.mode.debug_string(&cpu))
+    }
 }
 
 
