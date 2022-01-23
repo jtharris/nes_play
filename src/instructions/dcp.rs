@@ -42,6 +42,14 @@ impl Instruction for DCP {
             _ => panic!("Addressing mode not allowed for DCP")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("DCP {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

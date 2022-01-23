@@ -14,7 +14,7 @@ impl SLO {
 
 impl Display for SLO {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "*SLO {}", self.mode)
+        write!(f, "SLO {}", self.mode)
     }
 }
 
@@ -44,6 +44,14 @@ impl Instruction for SLO {
             AddressingMode::IndirectY(addr) => vec![0x13, addr],
             _ => panic!("Addressing mode not allowed for SLO")
         }
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("SLO {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
     }
 }
 
@@ -97,7 +105,7 @@ mod test {
     fn string_representation() {
         let slo = SLO::new(AddressingMode::ZeroPageY(0xFB));
 
-        assert_eq!("*SLO $FB,Y", slo.to_string())
+        assert_eq!("SLO $FB,Y", slo.to_string())
     }
 
     #[test]

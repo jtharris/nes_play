@@ -58,6 +58,14 @@ impl Instruction for RRA {
             _ => panic!("Addressing mode not allowed for RRA")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("RRA {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

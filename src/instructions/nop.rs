@@ -34,8 +34,8 @@ impl IllegalNOP {
 impl Display for IllegalNOP {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.mode {
-            Some(m) => write!(f, "*NOP {}", m),
-            None => write!(f, "*NOP")
+            Some(m) => write!(f, "NOP {}", m),
+            None => write!(f, "NOP")
         }
     }
 }
@@ -62,8 +62,12 @@ impl Instruction for IllegalNOP {
 
     fn debug_string(&self, cpu: &CPU) -> String {
         match &self.mode {
-            Some(m) => format!("*NOP {}", m.debug_string(&cpu)),
+            Some(m) => format!("NOP {}", m.debug_string(&cpu)),
             None => self.to_string()
         }
+    }
+
+    fn illegal(&self) -> bool {
+       true
     }
 }

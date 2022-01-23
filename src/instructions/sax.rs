@@ -14,7 +14,7 @@ impl SAX {
 
 impl Display for SAX {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "*SAX {}", self.mode)
+        write!(f, "SAX {}", self.mode)
     }
 }
 
@@ -33,6 +33,14 @@ impl Instruction for SAX {
             AddressingMode::IndirectX(addr) => vec![0x83, addr],
             _ => panic!("Addressing mode not allowed for SAX")
         }
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("SAX {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
     }
 }
 
@@ -60,7 +68,7 @@ mod test {
     fn string_representation() {
         let sax = SAX::new(ZeroPageY(0xFF));
 
-        assert_eq!("*SAX $FF,Y", sax.to_string())
+        assert_eq!("SAX $FF,Y", sax.to_string())
     }
 
     #[test]

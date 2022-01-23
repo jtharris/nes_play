@@ -14,7 +14,7 @@ impl SRE {
 
 impl Display for SRE {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "*SRE {}", self.mode)
+        write!(f, "SRE {}", self.mode)
     }
 }
 
@@ -46,6 +46,14 @@ impl Instruction for SRE {
             AddressingMode::IndirectY(addr) => vec![0x53, addr],
             _ => panic!("Addressing mode not allowed for SRE")
         }
+    }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("SRE {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
     }
 }
 
@@ -79,7 +87,7 @@ mod test {
     fn string_representation() {
         let sre = SRE::new(AddressingMode::ZeroPage(0xF1));
 
-        assert_eq!("*SRE $F1", sre.to_string());
+        assert_eq!("SRE $F1", sre.to_string());
     }
 
     #[test]

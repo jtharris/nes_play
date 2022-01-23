@@ -3,12 +3,17 @@ use crate::cpu::{AddressingMode, Instruction, CPU, StatusFlag};
 
 // http://www.obelisk.me.uk/6502/reference.html#SBC
 pub(super) struct SBC {
-    mode: AddressingMode
+    mode: AddressingMode,
+    illegal: bool
 }
 
 impl SBC {
     pub fn new(mode: AddressingMode) -> Self {
-        SBC{ mode }
+        SBC{ mode, illegal: false }
+    }
+
+    pub fn new_illegal(mode: AddressingMode) -> Self {
+        SBC{ mode, illegal: true }
     }
 }
 
@@ -44,21 +49,26 @@ impl Instruction for SBC {
     }
 
     fn bytes(&self) -> Vec<u8> {
-        match self.mode {
-            AddressingMode::Immediate(val) => vec![0xE9, val],
-            AddressingMode::ZeroPage(addr) => vec![0xE5, addr],
-            AddressingMode::ZeroPageX(addr) => vec![0xF5, addr],
-            AddressingMode::Absolute(addr) => self.bytes_for_opcode(0xED, addr),
-            AddressingMode::AbsoluteX(addr) => self.bytes_for_opcode(0xFD, addr),
-            AddressingMode::AbsoluteY(addr) => self.bytes_for_opcode(0xF9, addr),
-            AddressingMode::IndirectX(addr) => vec![0xE1, addr],
-            AddressingMode::IndirectY(addr) => vec![0xF1, addr],
+        match (self.illegal, &self.mode) {
+            (true, &AddressingMode::Immediate(val)) => vec![0xEB, val],
+            (false, &AddressingMode::Immediate(val)) => vec![0xE9, val],
+            (false, &AddressingMode::ZeroPage(addr)) => vec![0xE5, addr],
+            (false, &AddressingMode::ZeroPageX(addr)) => vec![0xF5, addr],
+            (false, &AddressingMode::Absolute(addr)) => self.bytes_for_opcode(0xED, addr),
+            (false, &AddressingMode::AbsoluteX(addr)) => self.bytes_for_opcode(0xFD, addr),
+            (false, &AddressingMode::AbsoluteY(addr)) => self.bytes_for_opcode(0xF9, addr),
+            (false, &AddressingMode::IndirectX(addr)) => vec![0xE1, addr],
+            (false, &AddressingMode::IndirectY(addr)) => vec![0xF1, addr],
             _ => panic!("Addressing mode not allowed for SBC")
         }
     }
 
     fn debug_string(&self, cpu: &CPU) -> String {
         format!("SBC {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        self.illegal
     }
 }
 

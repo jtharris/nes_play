@@ -182,12 +182,18 @@ impl CPU {
 
             write!(log, "{:04X}  ", pc);
             match &instruction {
-                Some(inst) => write!(log, "{:<8}  ", inst.bytes_string()),
-                None => write!(log, "        ")
+                Some(inst) => write!(log, "{:<8} ", inst.bytes_string()),
+                None => write!(log, "       ")
             };
 
             match &instruction {
-                Some(inst) => write!(log, "{:<32}", inst.debug_string(&self)),
+                Some(inst) => {
+                    if inst.illegal() {
+                        write!(log, "*{:<32}", inst.debug_string(&self))
+                    } else {
+                        write!(log, " {:<32}", inst.debug_string(&self))
+                    }
+                },
                 None => write!(log, "{:<25}", "No Instruction")
             };
             write!(log, "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} ",
@@ -328,6 +334,10 @@ pub trait Instruction: fmt::Display {
 
     fn debug_string(&self, cpu: &CPU) -> String {
         self.to_string()
+    }
+
+    fn illegal(&self) -> bool {
+        false
     }
 }
 

@@ -50,6 +50,14 @@ impl Instruction for RLA {
             _ => panic!("Addressing mode not allowed for RLA")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        format!("RLA {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

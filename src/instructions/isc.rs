@@ -14,7 +14,7 @@ impl ISC {
 
 impl Display for ISC {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "*ISC {}", self.mode)
+        write!(f, "ISC {}", self.mode)
     }
 }
 
@@ -59,6 +59,15 @@ impl Instruction for ISC {
             _ => panic!("Addressing mode not allowed for ISC")
         }
     }
+
+    fn debug_string(&self, cpu: &CPU) -> String {
+        // TODO:  ISC, ISB, INS are used interchangeably - this lines up with the reference logs
+        format!("ISB {}", self.mode.debug_string(&cpu))
+    }
+
+    fn illegal(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]
@@ -88,7 +97,7 @@ mod test {
     fn string_representation() {
         let isc = ISC::new(AddressingMode::ZeroPageX(0xFA));
 
-        assert_eq!("*ISC $FA,X", isc.to_string());
+        assert_eq!("ISC $FA,X", isc.to_string());
     }
 
     #[test]
