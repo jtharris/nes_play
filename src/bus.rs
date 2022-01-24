@@ -8,7 +8,7 @@ const PRG_ROM_END: u16 = 0xFFFF;
 
 // These are to handle mirroring
 fn ram_address(addr: u16) -> usize {
-    (addr & 0x3FF) as usize
+    (addr & 0x07FF) as usize
 }
 
 fn ppu_register_address(addr: u16) -> usize {

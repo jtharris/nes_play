@@ -63,7 +63,12 @@ impl CPU {
                 base.wrapping_add(self.index_register_y as u16)
             }
             &AddressingMode::IndirectX(base) => {
-                self.bus.read_mem16(base.wrapping_add(self.index_register_x) as u16)
+                let initial = base.wrapping_add(self.index_register_x);
+                let bytes = [
+                    self.bus.read_mem8(initial as u16),
+                    self.bus.read_mem8((initial).wrapping_add(1) as u16)
+                ];
+                u16::from_le_bytes(bytes)
             }
             &AddressingMode::IndirectY(address) => {
                 let bytes = [
@@ -75,6 +80,7 @@ impl CPU {
                 value.wrapping_add(self.index_register_y as u16)
             }
             &AddressingMode::ZeroPage(address) => address as u16,
+            // http://6502.org/tutorials/6502opcodes.html#WRAP
             &AddressingMode::ZeroPageX(base) => {
                 base.wrapping_add(self.index_register_x) as u16
             }
@@ -277,18 +283,13 @@ impl fmt::Display for AddressingMode {
 impl AddressingMode {
     pub fn debug_string(&self, cpu: &CPU) -> String {
         match self {
-            AddressingMode::Absolute(_) => format!("{} = {:02X}", self, cpu.read(self)),
-            AddressingMode::ZeroPage(_) => format!("{} = {:02X}", self, cpu.read(self)),
-            AddressingMode::ZeroPageX(_) => {
+            AddressingMode::Absolute(_) | AddressingMode::ZeroPage(_) => {
+                format!("{} = {:02X}", self, cpu.read(self))
+            },
+            AddressingMode::ZeroPageX(_) | AddressingMode::ZeroPageY(_) => {
                 format!("{} @ {:02X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
             },
-            AddressingMode::ZeroPageY(_) => {
-                format!("{} @ {:02X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
-            },
-            AddressingMode::AbsoluteX(_) => {
-                format!("{} @ {:04X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
-            },
-            AddressingMode::AbsoluteY(_) => {
+            AddressingMode::AbsoluteX(_) | AddressingMode::AbsoluteY(_) => {
                 format!("{} @ {:04X} = {:02X}", self, cpu.mem_address(self), cpu.read(self))
             },
             AddressingMode::IndirectX(base) => {
@@ -567,6 +568,19 @@ mod test {
 
         // Then
         assert_eq!(0x0A, cpu.read(&IndirectX(0x00)));
+    }
+
+    #[test]
+    fn indirect_x_boundary_read() {
+        // Given
+        let mut cpu = CPU::empty();
+        cpu.index_register_x = 0x00;
+        cpu.bus.write_mem8(0x00, 0x05);
+        cpu.bus.write_mem8(0xFF, 0x03);
+        cpu.bus.write_mem8(0x0503, 0x0A);
+
+        // Then
+        assert_eq!(0x0A, cpu.read(&IndirectX(0xFF)));
     }
 
     #[test]
