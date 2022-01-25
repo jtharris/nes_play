@@ -46,7 +46,7 @@ impl Bus {
             PRG_ROM ..= PRG_ROM_END => self.prg_rom[rom_address(addr)],
             _ => {
                 // Todo:  something else here?
-                println!("Ignoring memory read at:  {}", addr);
+                println!("Ignoring memory read at:  {:04X}", addr);
                 0
             }
         }

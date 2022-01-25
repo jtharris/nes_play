@@ -97,15 +97,11 @@ impl INesRom {
             false => 0
         };
 
-        // TODO:  This is all a big messy and probably not very performant with all of the copying
-        //        and resizing going on.
         let prg_rom_start = 16 + trainer_data_size;
         let prg_rom_end = prg_rom_start + header.prg_rom_size_bytes();
-        let mut prg_vec = contents[prg_rom_start..prg_rom_end].to_vec();
-        prg_vec.resize(0x4000, 0);
 
         let mut prg_rom: [u8; 0x4000] = [0x00; 0x4000];
-        prg_rom.copy_from_slice(&prg_vec);
+        prg_rom.copy_from_slice(&contents[prg_rom_start..prg_rom_end]);
 
         INesRom{ header, prg_rom }
     }
